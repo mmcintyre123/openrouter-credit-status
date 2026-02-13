@@ -1,0 +1,71 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start Vite Dev Server",
+            "type": "npm",
+            "script": "dev",
+            "icon": {
+                "id": "rocket",
+                "color": "terminal.ansiGreen"
+            },
+            "isBackground": true,
+            "presentation": {
+                "group": "servers",
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^.*$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*",
+                    "endsPattern": ".*Local:.*"
+                }
+            }
+        },
+        {
+            "label": "Start Flask API with debugpy",
+            "type": "shell",
+            "command": "python -m debugpy --listen 5678 -m flask --app check_openrouter_credit_balance_flask.py run --port=4000 --no-reload",
+            "icon": {
+                "id": "server",
+                "color": "terminal.ansiYellow"
+            },
+            "isBackground": true,
+            "presentation": {
+                "group": "servers",
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^.*$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*",
+                    "endsPattern": ".*Running on.*"
+                }
+            }
+        },
+        {
+            "label": "Start Both Servers",
+            "dependsOn": ["Start Vite Dev Server", "Start Flask API with debugpy"],
+            "dependsOrder": "parallel",
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
+            "label": "Start Debugger (also launches browser)",
+            "command": "${command:workbench.action.debug.start}",
+            "detail": "Starts Flask API debugger and launches browser",
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
+        }
+    ]
+}

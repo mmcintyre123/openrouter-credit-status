@@ -13,8 +13,12 @@ openrouter-credit-status/
 │   ├── index.css                          # Global styles
 │   └── assets/                            # Static assets
 ├── public/                                # Public static files
-├── check_openrouter_credit_balance.py     # Flask API server (port 4000)
-├── requirements.txt                       # Python dependencies
+├── .vscode/
+│   ├── tasks.json                         # Auto-start tasks for servers
+│   ├── launch.json                        # Debug configurations
+│   └── sessions.json                      # Terminal Keeper configuration
+├── check_openrouter_credit_balance_flask.py     # Flask API server (port 4000)
+├── requirements.txt                       # Python dependencies (includes debugpy)
 ├── package.json                           # Node.js dependencies
 ├── vite.config.js                         # Vite configuration
 ├── eslint.config.js                       # ESLint configuration
@@ -38,7 +42,7 @@ OpenRouterBalanceDashboard.jsx
         ├── Custom Tooltip (currency formatting)
         └── Custom Legend (interactive)
     ↓
-Flask API (localhost:4000)
+Flask API (localhost:4000) with debugpy debugger
     └── /api/openrouter/balance endpoint
         ├── Authenticates with ANTHROPIC_AUTH_TOKEN
         ├── Calls OpenRouter API (api.openrouter.ai)
@@ -81,15 +85,51 @@ set ANTHROPIC_AUTH_TOKEN=your-api-key-here       # Windows CMD
 $env:ANTHROPIC_AUTH_TOKEN="your-api-key-here"    # Windows PowerShell
 ```
 
-**3. Start the Flask API server:**
+**3. Install Node dependencies:**
 ```bash
-python check_openrouter_credit_balance.py
+npm install
 ```
 
-**4. Start the Vite dev server:**
+**4. Open workspace and auto-start (Recommended):**
+
+Simply open this folder in VS Code. The workspace is configured to automatically:
+- Start Vite dev server (port 5173) in a split terminal
+- Start Flask API with debugpy debugger (port 4000, debugger port 5678) in split terminal
+- Attach the Python debugger (set breakpoints in Flask code!)
+- Launch Chrome browser with the dashboard
+
+Press **F5** or just open the workspace to start everything!
+
+**Manual Start (Alternative):**
+
+If you prefer to start servers manually:
+
 ```bash
+# Terminal 1 - Start Flask API
+python check_openrouter_credit_balance_flask.py
+
+# Terminal 2 - Start Vite dev server
 npm run dev
 ```
+
+## Development & Debugging
+
+### Debugging Flask API
+
+The Flask API runs with **debugpy**, allowing you to set breakpoints in your Python code:
+
+1. Set breakpoints in [check_openrouter_credit_balance_flask.py](check_openrouter_credit_balance_flask.py)
+2. Press **F5** (or use Run → Start Debugging)
+3. The debugger automatically attaches to Flask on port 5678
+4. Trigger a request from the dashboard to hit your breakpoints
+
+### Split Terminal View
+
+Both servers run in a **split terminal view** grouped as "servers":
+- **Left pane**: Vite Dev Server
+- **Right pane**: Flask API with debugpy
+
+This keeps your development environment organized and allows easy monitoring of both servers simultaneously.
 
 ## Technologies
 
@@ -98,6 +138,7 @@ npm run dev
 - **Chakra UI v3** - Component library
 - **Recharts** - Data visualization
 - **Flask** - Python API server for real-time OpenRouter data
+- **debugpy** - Python debugger for Flask API debugging
 
 ## API
 

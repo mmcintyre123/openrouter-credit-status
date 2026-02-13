@@ -223,6 +223,7 @@ export default function OpenRouterBalanceDashboard() {
                                                     fontSize="3xl"
                                                     fontWeight="800"
                                                     color="blue.900"
+                                                    // style={{ filter: "blur(6px)" }} // uncomment to blur the value if needed for sharing
                                                 >
                                                     {formatUSD(data.totalLimit)}
                                                 </Stat.ValueText>
@@ -255,6 +256,7 @@ export default function OpenRouterBalanceDashboard() {
                                                     fontSize="3xl"
                                                     fontWeight="800"
                                                     color="green.900"
+                                                    // style={{ filter: "blur(6px)" }} // uncomment to blur the value if needed for sharing
                                                 >
                                                     {formatUSD(data.remaining)}
                                                 </Stat.ValueText>
@@ -454,6 +456,7 @@ export default function OpenRouterBalanceDashboard() {
                                                         fontSize="md"
                                                         fontWeight="bold"
                                                         color="gray.700"
+                                                        // style={{ filter: "blur(6px)" }} // uncomment to blur the value if needed for sharing
                                                     >
                                                         {formatUSD(d.value)}
                                                     </Text>
@@ -499,6 +502,7 @@ export default function OpenRouterBalanceDashboard() {
                                                 fontSize="2xl"
                                                 fontWeight="800"
                                                 color="purple.900"
+                                                // style={{ filter: "blur(6px)" }} // uncomment to blur the value if needed for sharing
                                             >
                                                 {formatUSD(data.usage)}
                                             </Stat.ValueText>
@@ -524,6 +528,7 @@ export default function OpenRouterBalanceDashboard() {
                                                 fontSize="2xl"
                                                 fontWeight="800"
                                                 color="orange.900"
+                                                // style={{ filter: "blur(6px)" }} // uncomment to blur the value if needed for sharing
                                             >
                                                 {formatUSD(data.usageDaily)}
                                             </Stat.ValueText>
@@ -549,6 +554,7 @@ export default function OpenRouterBalanceDashboard() {
                                                 fontSize="2xl"
                                                 fontWeight="800"
                                                 color="cyan.900"
+                                                // style={{ filter: "blur(6px)" }} // uncomment to blur the value if needed for sharing
                                             >
                                                 {formatUSD(data.usageWeekly)}
                                             </Stat.ValueText>
@@ -574,6 +580,7 @@ export default function OpenRouterBalanceDashboard() {
                                                 fontSize="2xl"
                                                 fontWeight="800"
                                                 color="pink.900"
+                                                // style={{ filter: "blur(6px)" }} // uncomment to blur the value if needed for sharing
                                             >
                                                 {formatUSD(data.usageMonthly)}
                                             </Stat.ValueText>

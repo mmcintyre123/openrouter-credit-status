@@ -1,0 +1,72 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "compounds": [
+        {
+            "name": "Full Stack: Flask API + Browser",
+            "configurations": [
+                "Attach to Flask API",
+                "Launch debug browser for Openrouter Credit Dashboard"
+            ],
+            "preLaunchTask": "Start Both Servers",
+            "stopAll": true,
+            "presentation": {
+                "hidden": false,
+                "group": "Full Stack",
+                "order": 1
+            }
+        }
+    ],
+    "configurations": [
+        {
+            "name": "Attach to Flask API",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "."
+                }
+            ],
+            "jinja": true
+        },
+        {
+            "name": "Launch debug browser for Openrouter Credit Dashboard",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:5173/", // Vite dev server
+            "webRoot": "${workspaceFolder}",
+            "port": 9223,
+            "sourceMapPathOverrides": {
+                "webpack:///src/*": "${webRoot}/src/*"
+            },
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "userDataDir": true,
+            "cleanUp": "wholeBrowser",
+            "sourceMaps": true,
+            "runtimeArgs": [
+                "--remote-debugging-port=9223",
+                "--start-maximized",
+                "--clear-cache-on-exit",
+                "--clear-cookies-on-exit",
+                // "--auto-open-devtools-for-tabs",
+                // "--user-data-dir=${env:USERPROFILE}\\AppData\\Local\\Google\\Chrome\\DebugUserData",
+            ],
+            "disableNetworkCache": false, // Change to false to allow session persistence
+            "timeout": 60000,
+            "env": {
+                "BROWSER": "chrome",
+                "NODE_ENV": "development",
+            },
+            // "preLaunchTask": "npm run dev",
+        }
+    ]
+}
