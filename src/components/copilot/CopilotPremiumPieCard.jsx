@@ -1,12 +1,6 @@
 import React from "react";
 import { Box, Card, Heading, HStack, Text, VStack } from "@chakra-ui/react";
-import {
-    Cell,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-} from "recharts";
+import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import {
     formatPercent,
     formatRequestCount,
@@ -38,8 +32,16 @@ export default function CopilotPremiumPieCard({ data }) {
 
     const chartData = React.useMemo(
         () => [
-            { name: "Included Requests Used", value: includedUsed },
-            { name: "Included Requests Remaining", value: includedRemaining },
+            {
+                name: "Included Requests Used",
+                value: includedUsed,
+                fill: COLORS[0],
+            },
+            {
+                name: "Included Requests Remaining",
+                value: includedRemaining,
+                fill: COLORS[1],
+            },
         ],
         [includedRemaining, includedUsed],
     );
@@ -64,14 +66,7 @@ export default function CopilotPremiumPieCard({ data }) {
                                 outerRadius={95}
                                 label={false}
                                 paddingAngle={4}
-                            >
-                                {chartData.map((entry, idx) => (
-                                    <Cell
-                                        key={`${entry.name}-${idx}`}
-                                        fill={COLORS[idx % COLORS.length]}
-                                    />
-                                ))}
-                            </Pie>
+                            />
                             <Tooltip content={<CopilotTooltip />} />
                         </PieChart>
                     </ResponsiveContainer>
@@ -106,7 +101,12 @@ export default function CopilotPremiumPieCard({ data }) {
                             borderWidth="1px"
                             borderColor="gray.200"
                         >
-                            <Box w={3} h={3} borderRadius="full" bg={COLORS[idx % COLORS.length]} />
+                            <Box
+                                w={3}
+                                h={3}
+                                borderRadius="full"
+                                bg={entry.fill ?? COLORS[idx % COLORS.length]}
+                            />
                             <VStack gap={0} align="start">
                                 <Text fontSize="xs" color="gray.500" fontWeight="600">
                                     {entry.name}

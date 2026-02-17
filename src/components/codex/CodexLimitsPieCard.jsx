@@ -8,7 +8,7 @@ import {
     SimpleGrid,
     Text,
 } from "@chakra-ui/react";
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import {
     formatLocalDateTimeWithZone,
     formatPercent,
@@ -65,8 +65,8 @@ function WindowPie({ windowLabel, windowData }) {
     const usedPercent = clampPercent(windowData.usedPercent);
     const remainingPercent = clampPercent(100 - usedPercent);
     const chartData = [
-        { name: "Used", value: usedPercent },
-        { name: "Remaining", value: remainingPercent },
+        { name: "Used", value: usedPercent, fill: COLORS[0] },
+        { name: "Remaining", value: remainingPercent, fill: COLORS[1] },
     ];
 
     return (
@@ -99,14 +99,7 @@ function WindowPie({ windowLabel, windowData }) {
                             outerRadius={70}
                             label={false}
                             paddingAngle={4}
-                        >
-                            {chartData.map((entry, idx) => (
-                                <Cell
-                                    key={`${windowLabel}-${entry.name}-${idx}`}
-                                    fill={COLORS[idx % COLORS.length]}
-                                />
-                            ))}
-                        </Pie>
+                        />
                         <Tooltip content={<CodexTooltip />} />
                     </PieChart>
                 </ResponsiveContainer>
@@ -140,7 +133,7 @@ function WindowPie({ windowLabel, windowData }) {
                             w={2}
                             h={2}
                             borderRadius="full"
-                            bg={COLORS[idx % COLORS.length]}
+                            bg={entry.fill ?? COLORS[idx % COLORS.length]}
                         />
                         <Text fontSize="xs" color="gray.600">
                             {entry.name}: {formatPercent(entry.value)}
