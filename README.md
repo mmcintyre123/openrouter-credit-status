@@ -1,147 +1,190 @@
-# OpenRouter Credit Balance Dashboard
+# OpenRouter + Copilot Usage Dashboard
 
-A simple dashboard to visualize OpenRouter API credit balance with interactive charts and real-time data.
+A compact, single-page dashboard that visualizes:
+- OpenRouter credit balance and usage
+- GitHub Copilot Pro premium request usage (included pool + overage)
 
 ## Architecture
 
-```
+```text
 openrouter-credit-status/
 ├── src/
-│   ├── main.jsx                           # App entry point, ChakraProvider setup
-│   ├── App.jsx                            # Root component
-│   ├── OpenRouterBalanceDashboard.jsx     # Main dashboard component
-│   ├── index.css                          # Global styles
-│   └── assets/                            # Static assets
-├── public/                                # Public static files
-├── .vscode/
-│   ├── tasks.json                         # Auto-start tasks for servers
-│   ├── launch.json                        # Debug configurations
-│   └── sessions.json                      # Terminal Keeper configuration
-├── check_openrouter_credit_balance_flask.py     # Flask API server (port 4000)
-├── requirements.txt                       # Python dependencies (includes debugpy)
-├── package.json                           # Node.js dependencies
-├── vite.config.js                         # Vite configuration
-├── eslint.config.js                       # ESLint configuration
-└── README.md                              # This file
+│   ├── main.jsx
+│   ├── App.jsx
+│   ├── OpenRouterBalanceDashboard.jsx
+│   ├── hooks/
+│   │   ├── useOpenRouterBalance.js
+│   │   ├── useCopilotPremiumUsage.js
+│   │   └── useOpenRouterBalanceDashboard.jsx
+│   ├── components/
+│   │   ├── DashboardHeader.jsx
+│   │   ├── SectionAlert.jsx
+│   │   ├── openrouter/
+│   │   │   ├── OpenRouterSummaryCard.jsx
+│   │   │   ├── OpenRouterUsageBreakdownCard.jsx
+│   │   │   └── OpenRouterBudgetPieCard.jsx
+│   │   └── copilot/
+│   │       ├── CopilotSummaryCard.jsx
+│   │       └── CopilotPremiumPieCard.jsx
+│   ├── utils/
+│   │   └── formatters.js
+│   └── resources/
+│       └── SampleResponseGithubPremiumRequestUsage.json
+├── check_openrouter_credit_balance_flask.py
+├── config/
+│   └── dashboard.properties
+├── docs/
+│   ├── copilot-premium-usage-implementation-plan.md
+│   └── copilot-premium-usage-request-pattern.md
+└── README.md
 ```
 
-**Component Flow:**
-```
-User Browser (localhost:5173)
-    ↓
-OpenRouterBalanceDashboard.jsx
-    ├── Fetches data every 60s from Flask API
-    ├── Manual refresh via Button click
-    ├── Renders with Chakra UI v3 components
-    │   ├── Card (balance summary)
-    │   ├── Stat (metrics display)
-    │   ├── Progress (budget visualization)
-    │   └── Alert (low budget warning)
-    └── Charts with Recharts
-        ├── PieChart (donut chart)
-        ├── Custom Tooltip (currency formatting)
-        └── Custom Legend (interactive)
-    ↓
-Flask API (localhost:4000) with debugpy debugger
-    └── /api/openrouter/balance endpoint
-        ├── Authenticates with ANTHROPIC_AUTH_TOKEN
-        ├── Calls OpenRouter API (api.openrouter.ai)
-        ├── Transforms response data
-        └── Returns JSON:
-            {
-              "totalLimit": 500.00,
-              "remaining": 158.61,
-              "resetPeriod": "monthly",
-              "usage": 341.49,
-              "usageDaily": 90.77,
-              "usageWeekly": 341.39,
-              "usageMonthly": 341.39,
-              "percentRemaining": 31.7,
-              "warningLowBudget": false,
-              "fetchedAt": "2026-02-12T16:39:47.000Z"
-            }
+## Design Decisions (v1)
+
+- Data source for Copilot metrics is a Flask backend proxy endpoint.
+- OpenRouter and Copilot requests run in parallel on initial load, manual refresh, and every 60 seconds.
+- Section-level error handling supports partial failures (one section can fail while the other remains rendered).
+- Copilot usage period is current month/year by default because backend calls GitHub without `year/month/day` query params.
+- Desktop layout is optimized for a compact one-page view (`1920x1200` target), while smaller screens remain responsive.
+
+## Data Flow
+
+1. Browser loads dashboard at `http://localhost:5173`.
+2. Frontend calls both backend endpoints in parallel.
+3. Flask backend fetches:
+- OpenRouter key usage from `https://openrouter.ai/api/v1/key`
+- Copilot premium usage from `https://api.github.com/users/{username}/settings/billing/premium_request/usage`
+4. Backend normalizes and returns stable JSON contracts.
+5. Frontend renders cards/charts per section and applies independent loading/error states.
+
+## API Endpoints
+
+- OpenRouter balance: `GET http://localhost:4000/api/openrouter/balance`
+- Copilot premium usage: `GET http://localhost:4000/api/github/copilot/premium-usage`
+
+### Copilot normalization logic
+
+From GitHub `usageItems`, backend computes:
+- `includedUsed = sum(discountQuantity)`
+- `includedRemaining = max(monthlyLimit - includedUsed, 0)`
+- `includedPercentUsed = min((includedUsed / monthlyLimit) * 100, 100)`
+- `grossUsed = sum(grossQuantity)`
+- `netOverage = sum(netQuantity)`
+- `billedAmount = sum(netAmount)`
+
+`timePeriod` is passed through from GitHub.
+
+Example response shape:
+
+```json
+{
+  "plan": { "name": "Copilot Pro", "monthlyLimit": 300.0 },
+  "user": "your-username",
+  "timePeriod": { "year": 2026, "month": 2 },
+  "totals": {
+    "includedUsed": 300.0,
+    "includedRemaining": 0.0,
+    "includedPercentUsed": 100.0,
+    "grossUsed": 300.44,
+    "netOverage": 0.44,
+    "billedAmount": 0.0176
+  },
+  "usageItems": [],
+  "fetchedAt": "2026-02-14T12:34:56"
+}
 ```
 
-**Data Flow:**
-1. User opens dashboard in browser (localhost:5173)
-2. React app fetches balance data from Flask API endpoint
-3. Flask server authenticates with OpenRouter API using `ANTHROPIC_AUTH_TOKEN`
-4. OpenRouter returns credit balance, usage, and limit data
-5. Flask transforms and returns JSON to frontend
-6. React renders data using Chakra UI components and Recharts visualizations
-7. Dashboard auto-refreshes every 60 seconds or on manual button click
+## Configuration
+
+### Environment variables
+
+Set:
+
+```bash
+# OpenRouter
+export ANTHROPIC_AUTH_TOKEN="your-openrouter-key"      # Linux/Mac
+set ANTHROPIC_AUTH_TOKEN=your-openrouter-key            # Windows CMD
+$env:ANTHROPIC_AUTH_TOKEN="your-openrouter-key"        # Windows PowerShell
+
+# GitHub Copilot PAT (Personal Access Token)
+export GITHUB_PAT="your-github-pat"                    # Linux/Mac
+set GITHUB_PAT=your-github-pat                          # Windows CMD
+$env:GITHUB_PAT="your-github-pat"                      # Windows PowerShell
+```
+
+### `config/dashboard.properties`
+
+Required/optional values:
+
+```properties
+GITHUB_USERNAME=your-github-username
+COPILOT_PRO_MONTHLY_LIMIT=300
+```
+
+`COPILOT_PRO_MONTHLY_LIMIT` defaults to `300` if missing/invalid.
 
 ## Quick Start
 
-**1. Install Python dependencies:**
+1. Install Python dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-**2. Set your OpenRouter API key:**
-```bash
-export ANTHROPIC_AUTH_TOKEN="your-api-key-here"  # Linux/Mac
-set ANTHROPIC_AUTH_TOKEN=your-api-key-here       # Windows CMD
-$env:ANTHROPIC_AUTH_TOKEN="your-api-key-here"    # Windows PowerShell
-```
+2. Install Node dependencies:
 
-**3. Install Node dependencies:**
 ```bash
 npm install
 ```
 
-**4. Open workspace and auto-start (Recommended):**
+3. Configure env vars and `config/dashboard.properties`.
 
-Simply open this folder in VS Code. The workspace is configured to automatically:
-- Start Vite dev server (port 5173) in a split terminal
-- Start Flask API with debugpy debugger (port 4000, debugger port 5678) in split terminal
-- Attach the Python debugger (set breakpoints in Flask code!)
-- Launch Chrome browser with the dashboard
-
-Press **F5** or just open the workspace to start everything!
-
-**Manual Start (Alternative):**
-
-If you prefer to start servers manually:
+4. Start services:
 
 ```bash
-# Terminal 1 - Start Flask API
+# Terminal 1
 python check_openrouter_credit_balance_flask.py
 
-# Terminal 2 - Start Vite dev server
+# Terminal 2
 npm run dev
 ```
 
-## Development & Debugging
+Dashboard URL: `http://localhost:5173`
 
-### Debugging Flask API
+## VS Code Auto-Start / Debug
 
-The Flask API runs with **debugpy**, allowing you to set breakpoints in your Python code:
+On workspace open (or `F5`), VS Code can auto-start:
+- Vite dev server on `5173`
+- Flask API with `debugpy` on `4000` (debug port `5678`)
+- Debugger attach session
+- Browser launch
 
-1. Set breakpoints in [check_openrouter_credit_balance_flask.py](check_openrouter_credit_balance_flask.py)
-2. Press **F5** (or use Run → Start Debugging)
-3. The debugger automatically attaches to Flask on port 5678
-4. Trigger a request from the dashboard to hit your breakpoints
+See `.vscode/tasks.json` and `.vscode/launch.json` for an example configuration.
 
-### Split Terminal View
+### Debugging Flask API with breakpoints
 
-Both servers run in a **split terminal view** grouped as "servers":
-- **Left pane**: Vite Dev Server
-- **Right pane**: Flask API with debugpy
+1. Set breakpoints in `check_openrouter_credit_balance_flask.py`.
+2. Press `F5` (or use Run -> Start Debugging).
+3. Confirm the debugger is attached to Flask on port `5678`.
+4. Trigger a dashboard refresh or call an API endpoint to hit breakpoints.
 
-This keeps your development environment organized and allows easy monitoring of both servers simultaneously.
+## UI Layout (Current)
+
+- Header row: dashboard title + refresh action.
+- Content row 1 (`xl`): OpenRouter summary, OpenRouter usage breakdown, Copilot summary.
+- Content row 2 (`xl`): OpenRouter budget pie, Copilot budget pie.
+- Warning and refresh-failure alerts render above the grids.
+
+## Frontend Notes
+
+- `useOpenRouterBalanceDashboard` orchestrates both data sources and drives partial-failure rendering.
+- `CopilotSummaryCard` includes a fallback for billed amount from `usageItems[].netAmount` if `totals.billedAmount` is absent.
+- Formatting is centralized in `src/utils/formatters.js`.
 
 ## Technologies
 
-- **React** - UI framework
-- **Vite** - Build tool and dev server
-- **Chakra UI v3** - Component library
-- **Recharts** - Data visualization
-- **Flask** - Python API server for real-time OpenRouter data
-- **debugpy** - Python debugger for Flask API debugging
-
-## API
-
-The dashboard fetches live balance data from: `http://localhost:4000/api/openrouter/balance`
-
-Data refreshes automatically every 60 seconds and on manual refresh button click.
+- React + Vite
+- Chakra UI v3
+- Recharts
+- Flask + requests + flask-cors
+- debugpy

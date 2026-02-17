@@ -1,0 +1,100 @@
+{
+  "timePeriod": {
+    "year": 2026,
+    "month": 2
+  },
+  "user": "mmcintyre123",
+  "usageItems": [
+    {
+      "product": "Copilot",
+      "sku": "Copilot Premium Request",
+      "model": "Auto: Claude Haiku 4.5",
+      "unitType": "requests",
+      "pricePerUnit": 0.04,
+      "grossQuantity": 7.5,
+      "grossAmount": 0.3,
+      "discountQuantity": 7.5,
+      "discountAmount": 0.3,
+      "netQuantity": 0.0,
+      "netAmount": 0.0
+    },
+    {
+      "product": "Copilot",
+      "sku": "Copilot Premium Request",
+      "model": "Auto: Claude Sonnet 4.5",
+      "unitType": "requests",
+      "pricePerUnit": 0.04,
+      "grossQuantity": 11.7,
+      "grossAmount": 0.468,
+      "discountQuantity": 11.7,
+      "discountAmount": 0.468,
+      "netQuantity": 0.0,
+      "netAmount": 0.0
+    },
+    {
+      "product": "Copilot",
+      "sku": "Copilot Premium Request",
+      "model": "Auto: GPT-5.2-Codex",
+      "unitType": "requests",
+      "pricePerUnit": 0.04,
+      "grossQuantity": 12.6,
+      "grossAmount": 0.504,
+      "discountQuantity": 12.6,
+      "discountAmount": 0.504,
+      "netQuantity": 0.0,
+      "netAmount": 0.0
+    },
+    {
+      "product": "Copilot",
+      "sku": "Copilot Premium Request",
+      "model": "Claude Haiku 4.5",
+      "unitType": "requests",
+      "pricePerUnit": 0.04,
+      "grossQuantity": 2.64,
+      "grossAmount": 0.1056,
+      "discountQuantity": 2.64,
+      "discountAmount": 0.1056,
+      "netQuantity": 0.0,
+      "netAmount": 0.0
+    },
+    {
+      "product": "Copilot",
+      "sku": "Copilot Premium Request",
+      "model": "Claude Opus 4.6",
+      "unitType": "requests",
+      "pricePerUnit": 0.04,
+      "grossQuantity": 3.0,
+      "grossAmount": 0.12,
+      "discountQuantity": 3.0,
+      "discountAmount": 0.12,
+      "netQuantity": 0.0,
+      "netAmount": 0.0
+    },
+    {
+      "product": "Copilot",
+      "sku": "Copilot Premium Request",
+      "model": "Claude Sonnet 4.5",
+      "unitType": "requests",
+      "pricePerUnit": 0.04,
+      "grossQuantity": 124.999999999,
+      "grossAmount": 4.999999999,
+      "discountQuantity": 124.559999999,
+      "discountAmount": 4.982399999,
+      "netQuantity": 0.44,
+      "netAmount": 0.0176
+    },
+    {
+      "product": "Copilot",
+      "sku": "Copilot Premium Request",
+      "model": "GPT-5.2-Codex",
+      "unitType": "requests",
+      "pricePerUnit": 0.04,
+      "grossQuantity": 138.0,
+      "grossAmount": 5.52,
+      "discountQuantity": 138.0,
+      "discountAmount": 5.52,
+      "netQuantity": 0.0,
+      "netAmount": 0.0
+    }
+  ]
+}
