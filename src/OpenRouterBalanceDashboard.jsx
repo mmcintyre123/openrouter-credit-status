@@ -10,14 +10,17 @@ export default function OpenRouterBalanceDashboard() {
         showLowBudgetWarning,
         showOpenRouterRefreshError,
         showCopilotRefreshError,
+        showCodexRefreshError,
         openRouterError,
         copilotError,
+        codexError,
         openRouterData,
         openRouterSummary,
         openRouterPie,
         openRouterUsage,
         copilotSummary,
         copilotPie,
+        codexPie,
     } = useOpenRouterBalanceDashboard();
 
     return (
@@ -56,6 +59,12 @@ export default function OpenRouterBalanceDashboard() {
                             message={`Copilot refresh failed: ${copilotError}`}
                         />
                     )}
+                    {showCodexRefreshError && (
+                        <SectionAlert
+                            status="error"
+                            message={`Codex refresh failed: ${codexError}`}
+                        />
+                    )}
 
                     <SimpleGrid columns={{ base: 1, xl: 3 }} gap={3}>
                         {openRouterSummary}
@@ -63,9 +72,10 @@ export default function OpenRouterBalanceDashboard() {
                         {copilotSummary}
                     </SimpleGrid>
 
-                    <SimpleGrid columns={{ base: 1, xl: 2 }} gap={3} flex="1">
+                    <SimpleGrid columns={{ base: 1, xl: 3 }} gap={3} flex="1">
                         {openRouterPie}
                         {copilotPie}
+                        {codexPie}
                     </SimpleGrid>
                 </VStack>
             </Box>

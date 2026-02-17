@@ -4,9 +4,11 @@ import { Card, HStack, Spinner, Text } from "@chakra-ui/react";
 import SectionAlert from "../components/SectionAlert.jsx";
 import CopilotPremiumPieCard from "../components/copilot/CopilotPremiumPieCard.jsx";
 import CopilotSummaryCard from "../components/copilot/CopilotSummaryCard.jsx";
+import CodexLimitsPieCard from "../components/codex/CodexLimitsPieCard.jsx";
 import OpenRouterBudgetPieCard from "../components/openrouter/OpenRouterBudgetPieCard.jsx";
 import OpenRouterSummaryCard from "../components/openrouter/OpenRouterSummaryCard.jsx";
 import OpenRouterUsageBreakdownCard from "../components/openrouter/OpenRouterUsageBreakdownCard.jsx";
+import { useCodexLimits } from "./useCodexLimits.js";
 import { useCopilotPremiumUsage } from "./useCopilotPremiumUsage.js";
 import { useOpenRouterBalance } from "./useOpenRouterBalance.js";
 
@@ -62,10 +64,20 @@ export function useOpenRouterBalanceDashboard() {
         error: copilotError,
         refresh: refreshCopilot,
     } = useCopilotPremiumUsage();
+    const {
+        data: codexData,
+        status: codexStatus,
+        error: codexError,
+        refresh: refreshCodex,
+    } = useCodexLimits();
 
     const refreshAll = React.useCallback(async () => {
-        await Promise.allSettled([refreshOpenRouter(), refreshCopilot()]);
-    }, [refreshCopilot, refreshOpenRouter]);
+        await Promise.allSettled([
+            refreshOpenRouter(),
+            refreshCopilot(),
+            refreshCodex(),
+        ]);
+    }, [refreshCodex, refreshCopilot, refreshOpenRouter]);
 
     React.useEffect(() => {
         refreshAll();
@@ -74,7 +86,9 @@ export function useOpenRouterBalanceDashboard() {
     }, [refreshAll]);
 
     const isRefreshing =
-        openRouterStatus === "loading" || copilotStatus === "loading";
+        openRouterStatus === "loading" ||
+        copilotStatus === "loading" ||
+        codexStatus === "loading";
     const openRouterPercent = Number(openRouterData?.percentRemaining ?? 0);
     const showLowBudgetWarning =
         Boolean(openRouterData?.warningLowBudget) || openRouterPercent < 10;
@@ -82,6 +96,7 @@ export function useOpenRouterBalanceDashboard() {
         openRouterStatus === "error" && Boolean(openRouterData);
     const showCopilotRefreshError =
         copilotStatus === "error" && Boolean(copilotData);
+    const showCodexRefreshError = codexStatus === "error" && Boolean(codexData);
 
     const openRouterSummary = openRouterData ? (
         <OpenRouterSummaryCard data={openRouterData} />
@@ -129,19 +144,30 @@ export function useOpenRouterBalanceDashboard() {
         <LoadingCard label="Copilot chart" />
     );
 
+    const codexPie = codexData ? (
+        <CodexLimitsPieCard data={codexData} />
+    ) : codexStatus === "error" ? (
+        <ErrorCard label="ChatGPT Codex Allowance" error={codexError} />
+    ) : (
+        <LoadingCard label="Codex chart" />
+    );
+
     return {
         refreshAll,
         isRefreshing,
         showLowBudgetWarning,
         showOpenRouterRefreshError,
         showCopilotRefreshError,
+        showCodexRefreshError,
         openRouterError,
         copilotError,
+        codexError,
         openRouterData,
         openRouterSummary,
         openRouterPie,
         openRouterUsage,
         copilotSummary,
         copilotPie,
+        codexPie,
     };
 }

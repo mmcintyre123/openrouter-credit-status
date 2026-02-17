@@ -36,3 +36,20 @@ export function formatLocalDateTime(value) {
     }
     return new Date(value).toLocaleString();
 }
+
+export function formatLocalDateTimeWithZone(value) {
+    if (!value) {
+        return "—";
+    }
+
+    return new Intl.DateTimeFormat(undefined, {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+        timeZoneName: "short",
+    }).format(new Date(value));
+}

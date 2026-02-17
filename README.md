@@ -1,8 +1,9 @@
-# OpenRouter + Copilot Usage Dashboard
+# OpenRouter + Copilot + Codex Usage Dashboard
 
 A compact, single-page dashboard that visualizes:
 - OpenRouter credit balance and usage
 - GitHub Copilot Pro premium request usage (included pool + overage)
+- ChatGPT Codex limits (server endpoint available for integration)
 
 ## Architecture
 
@@ -15,6 +16,7 @@ openrouter-credit-status/
 │   ├── hooks/
 │   │   ├── useOpenRouterBalance.js
 │   │   ├── useCopilotPremiumUsage.js
+│   │   ├── useCodexLimits.js
 │   │   └── useOpenRouterBalanceDashboard.jsx
 │   ├── components/
 │   │   ├── DashboardHeader.jsx
@@ -23,6 +25,8 @@ openrouter-credit-status/
 │   │   │   ├── OpenRouterSummaryCard.jsx
 │   │   │   ├── OpenRouterUsageBreakdownCard.jsx
 │   │   │   └── OpenRouterBudgetPieCard.jsx
+│   │   ├── codex/
+│   │   │   └── CodexLimitsPieCard.jsx
 │   │   └── copilot/
 │   │       ├── CopilotSummaryCard.jsx
 │   │       └── CopilotPremiumPieCard.jsx
@@ -42,6 +46,7 @@ openrouter-credit-status/
 ## Design Decisions (v1)
 
 - Data source for Copilot metrics is a Flask backend proxy endpoint.
+- Data source for Codex limits is a Flask backend proxy endpoint that calls ChatGPT WHAM usage API.
 - OpenRouter and Copilot requests run in parallel on initial load, manual refresh, and every 60 seconds.
 - Section-level error handling supports partial failures (one section can fail while the other remains rendered).
 - Copilot usage period is current month/year by default because backend calls GitHub without `year/month/day` query params.
@@ -54,6 +59,7 @@ openrouter-credit-status/
 3. Flask backend fetches:
 - OpenRouter key usage from `https://openrouter.ai/api/v1/key`
 - Copilot premium usage from `https://api.github.com/users/{username}/settings/billing/premium_request/usage`
+- Codex limits from `https://chatgpt.com/backend-api/wham/usage`
 4. Backend normalizes and returns stable JSON contracts.
 5. Frontend renders cards/charts per section and applies independent loading/error states.
 
@@ -61,6 +67,7 @@ openrouter-credit-status/
 
 - OpenRouter balance: `GET http://localhost:4000/api/openrouter/balance`
 - Copilot premium usage: `GET http://localhost:4000/api/github/copilot/premium-usage`
+- Codex limits: `GET http://localhost:4000/api/openai/codex/limits`
 
 ### Copilot normalization logic
 
@@ -110,7 +117,20 @@ $env:ANTHROPIC_AUTH_TOKEN="your-openrouter-key"        # Windows PowerShell
 export GITHUB_PAT="your-github-pat"                    # Linux/Mac
 set GITHUB_PAT=your-github-pat                          # Windows CMD
 $env:GITHUB_PAT="your-github-pat"                      # Windows PowerShell
+
+# Optional ChatGPT auth override for Codex limits endpoint
+export CHATGPT_ACCESS_TOKEN="your-chatgpt-access-token" # Linux/Mac
+export CHATGPT_ACCOUNT_ID="your-chatgpt-account-id"     # Linux/Mac
+set CHATGPT_ACCESS_TOKEN=your-chatgpt-access-token      # Windows CMD
+set CHATGPT_ACCOUNT_ID=your-chatgpt-account-id          # Windows CMD
+$env:CHATGPT_ACCESS_TOKEN="your-chatgpt-access-token"  # Windows PowerShell
+$env:CHATGPT_ACCOUNT_ID="your-chatgpt-account-id"      # Windows PowerShell
 ```
+
+`/api/openai/codex/limits` auth behavior:
+- Uses `CHATGPT_ACCESS_TOKEN` + `CHATGPT_ACCOUNT_ID` when both are set.
+- Falls back to Codex CLI cache at `%USERPROFILE%\.codex\auth.json`.
+- Returns HTTP 500 if neither source provides usable auth.
 
 ### `config/dashboard.properties`
 
@@ -172,7 +192,7 @@ See `.vscode/tasks.json` and `.vscode/launch.json` for an example configuration.
 
 - Header row: dashboard title + refresh action.
 - Content row 1 (`xl`): OpenRouter summary, OpenRouter usage breakdown, Copilot summary.
-- Content row 2 (`xl`): OpenRouter budget pie, Copilot budget pie.
+- Content row 2 (`xl`): OpenRouter budget pie, Copilot budget pie, Codex limits pie card (5-hour + 7-day).
 - Warning and refresh-failure alerts render above the grids.
 
 ## Frontend Notes
