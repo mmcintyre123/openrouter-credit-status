@@ -1,8 +1,6 @@
 import React from "react";
 
-const OPENROUTER_BALANCE_URL = "http://localhost:4000/api/openrouter/balance";
-
-export function useOpenRouterBalance() {
+export function useApiResource(url) {
     const [data, setData] = React.useState(null);
     const [status, setStatus] = React.useState("idle");
     const [error, setError] = React.useState("");
@@ -12,7 +10,7 @@ export function useOpenRouterBalance() {
         setError("");
 
         try {
-            const response = await fetch(OPENROUTER_BALANCE_URL, {
+            const response = await fetch(url, {
                 method: "GET",
                 headers: { Accept: "application/json" },
             });
@@ -20,7 +18,7 @@ export function useOpenRouterBalance() {
             if (!response.ok) {
                 const text = await response.text();
                 throw new Error(
-                    `Request failed: ${response.status} ${response.statusText}${text ? ` - ${text}` : ""}`,
+                    `Request failed: ${response.status} ${response.statusText}${text ? ` - ${text}` : ""}`
                 );
             }
 
@@ -33,7 +31,7 @@ export function useOpenRouterBalance() {
             setError(fetchError?.message || "Unknown error");
             throw fetchError;
         }
-    }, []);
+    }, [url]);
 
     return { data, status, error, refresh };
 }

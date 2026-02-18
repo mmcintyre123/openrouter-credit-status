@@ -8,9 +8,9 @@
             "name": "Full Stack: Flask API + Browser",
             "configurations": [
                 "Attach to Flask API",
-                "Launch debug browser for Openrouter Credit Dashboard"
+                "Launch debug browser for Usage Dashboard"
             ],
-            "preLaunchTask": "Start Both Servers",
+            "preLaunchTask": "Cleanup and Restart Servers",
             "stopAll": true,
             "presentation": {
                 "hidden": false,
@@ -37,7 +37,7 @@
             "jinja": true
         },
         {
-            "name": "Launch debug browser for Openrouter Credit Dashboard",
+            "name": "Launch debug browser for Usage Dashboard",
             "type": "chrome",
             "request": "launch",
             "url": "http://localhost:5173/", // Vite dev server

@@ -5,9 +5,8 @@ import SectionAlert from "../components/SectionAlert.jsx";
 import CopilotPremiumPieCard from "../components/copilot/CopilotPremiumPieCard.jsx";
 import CodexLimitsPieCard from "../components/codex/CodexLimitsPieCard.jsx";
 import OpenRouterBudgetPieCard from "../components/openrouter/OpenRouterBudgetPieCard.jsx";
-import { useCodexLimits } from "./useCodexLimits.js";
-import { useCopilotPremiumUsage } from "./useCopilotPremiumUsage.js";
-import { useOpenRouterBalance } from "./useOpenRouterBalance.js";
+import { API_ENDPOINTS } from "../api/endpoints.js";
+import { useApiResource } from "./useApiResource.js";
 
 function LoadingCard({ label }) {
     return (
@@ -48,25 +47,25 @@ function ErrorCard({ label, error }) {
     );
 }
 
-export function useOpenRouterBalanceDashboard() {
+export function useUsageDashboard() {
     const {
         data: openRouterData,
         status: openRouterStatus,
         error: openRouterError,
         refresh: refreshOpenRouter,
-    } = useOpenRouterBalance();
+    } = useApiResource(API_ENDPOINTS.openRouterBalance);
     const {
         data: copilotData,
         status: copilotStatus,
         error: copilotError,
         refresh: refreshCopilot,
-    } = useCopilotPremiumUsage();
+    } = useApiResource(API_ENDPOINTS.copilotPremiumUsage);
     const {
         data: codexData,
         status: codexStatus,
         error: codexError,
         refresh: refreshCodex,
-    } = useCodexLimits();
+    } = useApiResource(API_ENDPOINTS.codexLimits);
 
     const refreshAll = React.useCallback(async () => {
         await Promise.allSettled([

@@ -1,5 +1,5 @@
-import OpenRouterBalanceDashboard from './OpenRouterBalanceDashboard.jsx';
+import UsageDashboard from "./UsageDashboard.jsx";
 
 export default function App() {
-  return <OpenRouterBalanceDashboard />;
+    return <UsageDashboard />;
 }

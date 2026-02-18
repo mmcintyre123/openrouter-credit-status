@@ -1,9 +1,9 @@
 import { Box, SimpleGrid, VStack } from "@chakra-ui/react";
 import DashboardHeader from "./components/DashboardHeader.jsx";
 import SectionAlert from "./components/SectionAlert.jsx";
-import { useOpenRouterBalanceDashboard } from "./hooks/useOpenRouterBalanceDashboard.jsx";
+import { useUsageDashboard } from "./hooks/useUsageDashboard.jsx";
 
-export default function OpenRouterBalanceDashboard() {
+export default function UsageDashboard() {
     const {
         refreshAll,
         isRefreshing,
@@ -18,7 +18,7 @@ export default function OpenRouterBalanceDashboard() {
         openRouterPie,
         copilotPie,
         codexPie,
-    } = useOpenRouterBalanceDashboard();
+    } = useUsageDashboard();
 
     return (
         <Box

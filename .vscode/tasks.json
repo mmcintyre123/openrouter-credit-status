@@ -29,7 +29,13 @@
         {
             "label": "Start Flask API with debugpy",
             "type": "shell",
-            "command": "python -m debugpy --listen 5678 -m flask --app check_openrouter_credit_balance_flask.py run --port=4000 --no-reload",
+            "command": "python -m debugpy --listen 5678 run_api.py",
+            "options": {
+                "env": {
+                    "NO_PROXY": "localhost,127.0.0.1,::1,openrouter.ai,api.github.com,github.com,.github.com",
+                    "no_proxy": "localhost,127.0.0.1,::1,openrouter.ai,api.github.com,github.com,.github.com"
+                }
+            },
             "icon": {
                 "id": "server",
                 "color": "terminal.ansiYellow"
@@ -60,12 +66,28 @@
             }
         },
         {
+            "label": "Cleanup Stale Dev Processes",
+            "type": "shell",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"${workspaceFolder}\\.vscode\\scripts\\cleanup-stale-dev-processes.ps1\"",
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
+            "label": "Cleanup and Restart Servers",
+            "dependsOn": ["Cleanup Stale Dev Processes", "Start Both Servers"],
+            "dependsOrder": "sequence",
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
             "label": "Start Debugger (also launches browser)",
             "command": "${command:workbench.action.debug.start}",
-            "detail": "Starts Flask API debugger and launches browser",
+            "detail": "Starts the last run launch config - should be 'Full Stack: Flask API + Browser' both in debug mode",
             "runOptions": {
                 "runOn": "folderOpen"
-            }
+            },
         }
     ]
 }

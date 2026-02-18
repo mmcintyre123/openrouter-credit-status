@@ -152,7 +152,6 @@ function WindowPie({ windowLabel, windowData }) {
 }
 
 export default function CodexLimitsPieCard({ data }) {
-    const planType = data?.planType ? String(data.planType).toUpperCase() : "—";
     const primary = data?.limits?.primary ?? null;
     const secondary = data?.limits?.secondary ?? null;
 
