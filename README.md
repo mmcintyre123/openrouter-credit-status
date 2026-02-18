@@ -22,13 +22,10 @@ openrouter-credit-status/
 │   │   ├── DashboardHeader.jsx
 │   │   ├── SectionAlert.jsx
 │   │   ├── openrouter/
-│   │   │   ├── OpenRouterSummaryCard.jsx
-│   │   │   ├── OpenRouterUsageBreakdownCard.jsx
 │   │   │   └── OpenRouterBudgetPieCard.jsx
 │   │   ├── codex/
 │   │   │   └── CodexLimitsPieCard.jsx
 │   │   └── copilot/
-│   │       ├── CopilotSummaryCard.jsx
 │   │       └── CopilotPremiumPieCard.jsx
 │   ├── utils/
 │   │   └── formatters.js
@@ -188,17 +185,69 @@ See `.vscode/tasks.json` and `.vscode/launch.json` for an example configuration.
 3. Confirm the debugger is attached to Flask on port `5678`.
 4. Trigger a dashboard refresh or call an API endpoint to hit breakpoints.
 
+## Testing (Playwright MCP)
+
+Use Playwright MCP for browser-driven UI testing with either Codex or GitHub Copilot.
+
+1. Install Playwright MCP globally:
+
+```powershell
+npm i -g @playwright/mcp
+```
+
+2. Start Chrome with remote debugging:
+
+```powershell
+Start-Process "C:\Program Files\Google\Chrome\Application\chrome.exe" "--remote-debugging-port=9222"
+Start-Process "C:\Program Files\Google\Chrome\Application\chrome.exe" "--remote-debugging-port=9223"
+```
+
+3. Codex setup (`C:\Users\mmcin\.codex\config.toml`):
+
+```toml
+[mcp_servers.playwright]
+command = "C:\\Users\\mmcin\\.codex\\playwright-mcp-cdp-first.cmd"
+args = []
+
+[mcp_servers.playwright.env]
+NPM_CONFIG_OFFLINE = "false"
+HTTP_PROXY = ""
+HTTPS_PROXY = ""
+ALL_PROXY = ""
+```
+
+`C:\Users\mmcin\.codex\playwright-mcp-cdp-first.cmd` runs CDP-first (`9223`) and falls back to managed browser if CDP is unavailable.
+
+4. GitHub Copilot setup (`C:\Users\mmcin\AppData\Roaming\Code - Insiders\User\mcp.json`):
+
+```json
+"microsoft/playwright-mcp": {
+  "type": "stdio",
+  "command": "C:\\Users\\mmcin\\AppData\\Roaming\\npm\\playwright-mcp.cmd",
+  "args": [
+    "--browser=chrome",
+    "--cdp-endpoint=http://127.0.0.1:9222",
+    "--output-dir=C:\\Users\\mmcin\\Downloads\\"
+  ],
+  "gallery": "https://api.mcp.github.com",
+  "version": "0.0.1-seed"
+}
+```
+
+5. Restart the client after config changes:
+- Restart Codex after editing `~/.codex/config.toml`.
+- Restart VS Code Insiders after editing `mcp.json`.
+
 ## UI Layout (Current)
 
 - Header row: dashboard title + refresh action.
-- Content row 1 (`xl`): OpenRouter summary, OpenRouter usage breakdown, Copilot summary.
-- Content row 2 (`xl`): OpenRouter budget pie, Copilot budget pie, Codex limits pie card (5-hour + 7-day).
+- Content row 1 (`xl`): OpenRouter budget pie, Copilot budget pie, Codex limits pie card (5-hour + 7-day).
 - Warning and refresh-failure alerts render above the grids.
 
 ## Frontend Notes
 
 - `useOpenRouterBalanceDashboard` orchestrates both data sources and drives partial-failure rendering.
-- `CopilotSummaryCard` includes a fallback for billed amount from `usageItems[].netAmount` if `totals.billedAmount` is absent.
+- `CopilotPremiumPieCard` includes a fallback for billed amount from `usageItems[].netAmount` if `totals.billedAmount` is absent.
 - Formatting is centralized in `src/utils/formatters.js`.
 
 ## Technologies

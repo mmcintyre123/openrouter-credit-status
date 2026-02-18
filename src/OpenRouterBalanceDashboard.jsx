@@ -15,10 +15,7 @@ export default function OpenRouterBalanceDashboard() {
         copilotError,
         codexError,
         openRouterData,
-        openRouterSummary,
         openRouterPie,
-        openRouterUsage,
-        copilotSummary,
         copilotPie,
         codexPie,
     } = useOpenRouterBalanceDashboard();
@@ -67,12 +64,6 @@ export default function OpenRouterBalanceDashboard() {
                     )}
 
                     <SimpleGrid columns={{ base: 1, xl: 3 }} gap={3}>
-                        {openRouterSummary}
-                        {openRouterUsage}
-                        {copilotSummary}
-                    </SimpleGrid>
-
-                    <SimpleGrid columns={{ base: 1, xl: 3 }} gap={3} flex="1">
                         {openRouterPie}
                         {copilotPie}
                         {codexPie}

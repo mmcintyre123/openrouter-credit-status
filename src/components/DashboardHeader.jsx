@@ -14,7 +14,7 @@ export default function DashboardHeader({ onRefresh, loading }) {
         >
             <HStack justify="space-between" align="center">
                 <Heading size={{ base: "md", xl: "lg" }} fontWeight="bold">
-                    OpenRouter + Copilot Usage
+                    OpenRouter + Copilot + Codex Usage and Limits
                 </Heading>
                 <Button
                     onClick={onRefresh}

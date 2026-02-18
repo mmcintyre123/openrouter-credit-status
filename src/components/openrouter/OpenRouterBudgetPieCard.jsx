@@ -1,7 +1,7 @@
 import React from "react";
-import { Box, Card, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import { Box, Card, Code, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import { formatPercent, formatUSD } from "../../utils/formatters.js";
+import { formatLocalDateTime, formatPercent, formatUSD } from "../../utils/formatters.js";
 
 const COLORS = ["#3182ce", "#38a169"];
 
@@ -48,9 +48,15 @@ export default function OpenRouterBudgetPieCard({ data }) {
             h="100%"
         >
             <Card.Body p={4}>
-                <Heading size="sm" mb={2}>
+                <Heading size="md" mb={2}>
                     OpenRouter Budget Visualization
                 </Heading>
+                <Text fontSize="xs" color="gray.500" mb={2}>
+                    Reset: {String(data?.resetPeriod || "N/A")}
+                </Text>
+                <Text fontSize="xs" color="gray.500" mb={2}>
+                    Last updated: <Code fontSize="xs">{formatLocalDateTime(data?.fetchedAt)}</Code>
+                </Text>
 
                 <Box
                     position="relative"
@@ -133,7 +139,27 @@ export default function OpenRouterBudgetPieCard({ data }) {
                             </VStack>
                         </HStack>
                     ))}
+                    <HStack
+                        gap={2}
+                        px={3}
+                        py={1}
+                        borderRadius="md"
+                        bg="gray.50"
+                        borderWidth="1px"
+                        borderColor="gray.200"
+                    >
+                        <Box w={3} h={3} borderRadius="full" bg="#3182ce" />
+                        <VStack gap={0} align="start">
+                            <Text fontSize="xs" color="gray.500" fontWeight="600">
+                                Total Limit
+                            </Text>
+                            <Text fontSize="sm" fontWeight="bold" color="gray.700">
+                                {formatUSD(data?.totalLimit)}
+                            </Text>
+                        </VStack>
+                    </HStack>
                 </HStack>
+
             </Card.Body>
         </Card.Root>
     );

@@ -3,11 +3,8 @@ import React from "react";
 import { Card, HStack, Spinner, Text } from "@chakra-ui/react";
 import SectionAlert from "../components/SectionAlert.jsx";
 import CopilotPremiumPieCard from "../components/copilot/CopilotPremiumPieCard.jsx";
-import CopilotSummaryCard from "../components/copilot/CopilotSummaryCard.jsx";
 import CodexLimitsPieCard from "../components/codex/CodexLimitsPieCard.jsx";
 import OpenRouterBudgetPieCard from "../components/openrouter/OpenRouterBudgetPieCard.jsx";
-import OpenRouterSummaryCard from "../components/openrouter/OpenRouterSummaryCard.jsx";
-import OpenRouterUsageBreakdownCard from "../components/openrouter/OpenRouterUsageBreakdownCard.jsx";
 import { useCodexLimits } from "./useCodexLimits.js";
 import { useCopilotPremiumUsage } from "./useCopilotPremiumUsage.js";
 import { useOpenRouterBalance } from "./useOpenRouterBalance.js";
@@ -98,14 +95,6 @@ export function useOpenRouterBalanceDashboard() {
         copilotStatus === "error" && Boolean(copilotData);
     const showCodexRefreshError = codexStatus === "error" && Boolean(codexData);
 
-    const openRouterSummary = openRouterData ? (
-        <OpenRouterSummaryCard data={openRouterData} />
-    ) : openRouterStatus === "error" ? (
-        <ErrorCard label="OpenRouter Summary" error={openRouterError} />
-    ) : (
-        <LoadingCard label="OpenRouter summary" />
-    );
-
     const openRouterPie = openRouterData ? (
         <OpenRouterBudgetPieCard data={openRouterData} />
     ) : openRouterStatus === "error" ? (
@@ -115,22 +104,6 @@ export function useOpenRouterBalanceDashboard() {
         />
     ) : (
         <LoadingCard label="OpenRouter chart" />
-    );
-
-    const openRouterUsage = openRouterData ? (
-        <OpenRouterUsageBreakdownCard data={openRouterData} />
-    ) : openRouterStatus === "error" ? (
-        <ErrorCard label="OpenRouter Usage Breakdown" error={openRouterError} />
-    ) : (
-        <LoadingCard label="OpenRouter usage" />
-    );
-
-    const copilotSummary = copilotData ? (
-        <CopilotSummaryCard data={copilotData} />
-    ) : copilotStatus === "error" ? (
-        <ErrorCard label="Copilot Premium Usage" error={copilotError} />
-    ) : (
-        <LoadingCard label="Copilot summary" />
     );
 
     const copilotPie = copilotData ? (
@@ -163,10 +136,7 @@ export function useOpenRouterBalanceDashboard() {
         copilotError,
         codexError,
         openRouterData,
-        openRouterSummary,
         openRouterPie,
-        openRouterUsage,
-        copilotSummary,
         copilotPie,
         codexPie,
     };

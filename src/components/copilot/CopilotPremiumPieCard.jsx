@@ -1,12 +1,14 @@
 import React from "react";
-import { Box, Card, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import { Box, Card, Code, Heading, HStack, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import {
+    formatLocalDateTime,
+    formatUSD,
     formatPercent,
     formatRequestCount,
 } from "../../utils/formatters.js";
 
-const COLORS = ["#d69e2e", "#38a169"];
+const COLORS = ["#3182ce", "#38a169"];
 
 function CopilotTooltip({ active, payload }) {
     if (!active || !payload || !payload.length) return null;
@@ -25,39 +27,84 @@ function CopilotTooltip({ active, payload }) {
 export default function CopilotPremiumPieCard({ data }) {
     const monthlyLimit = Number(data?.plan?.monthlyLimit ?? 300);
     const totals = data?.totals ?? {};
-    const includedUsed = Number(totals.includedUsed ?? 0);
-    const includedRemaining = Number(totals.includedRemaining ?? 0);
-    const percentRemaining =
-        monthlyLimit > 0 ? (includedRemaining / monthlyLimit) * 100 : 0;
-
+    const billedAmountFallback = Array.isArray(data?.usageItems)
+        ? data.usageItems.reduce((sum, item) => sum + Number(item?.netAmount ?? 0), 0)
+        : 0;
+    const billedAmount = Number(totals.billedAmount ?? billedAmountFallback);
     const chartData = React.useMemo(
         () => [
             {
                 name: "Included Requests Used",
-                value: includedUsed,
+                value: Number(totals.includedUsed ?? 0),
                 fill: COLORS[0],
+                bg: "gray.50",
+                border: "gray.200",
+                labelColor: "gray.500",
+                valueColor: "gray.700",
+                format: "count",
+                pie: true,
             },
             {
                 name: "Included Requests Remaining",
-                value: includedRemaining,
+                value: Number(totals.includedRemaining ?? 0),
                 fill: COLORS[1],
+                bg: "gray.50",
+                border: "gray.200",
+                labelColor: "gray.500",
+                valueColor: "gray.700",
+                format: "count",
+                pie: true,
+            },
+            {
+                name: "Billed Overage",
+                value: Number(totals.netOverage ?? 0),
+                fill: "#d69e2e",
+                showDot: false,
+                bg: "orange.50",
+                border: "orange.200",
+                labelColor: "orange.700",
+                valueColor: "orange.900",
+                format: "count",
+                pie: false,
+            },
+            {
+                name: "Billed Amount",
+                value: billedAmount,
+                fill: "#e53e3e",
+                showDot: false,
+                bg: "red.50",
+                border: "red.200",
+                labelColor: "red.700",
+                valueColor: "red.900",
+                format: "currency",
+                pie: false,
             },
         ],
-        [includedRemaining, includedUsed],
+        [billedAmount, totals.includedRemaining, totals.includedUsed, totals.netOverage],
     );
+    const pieData = chartData.filter((entry) => entry.pie);
+    const includedRemaining = Number(pieData[1]?.value ?? 0);
+    const percentRemaining =
+        monthlyLimit > 0 ? (includedRemaining / monthlyLimit) * 100 : 0;
 
     return (
         <Card.Root boxShadow="lg" borderWidth="1px" borderColor="gray.200" h="100%">
             <Card.Body p={4}>
-                <Heading size="sm" mb={2}>
-                    GitHub Copilot Budget Visualization
+                <Heading size="md" mb={2}>
+                    GitHub Copilot Pro Budget Visualization
                 </Heading>
+                <Text fontSize="xs" color="gray.500" mb={2}>
+                    Reset: monthly
+                </Text>
+                <Text fontSize="xs" color="gray.500" mb={2}>
+                    Last updated: <Code fontSize="xs">{formatLocalDateTime(data?.fetchedAt)}</Code>
+                </Text>
 
                 <Box position="relative" display="flex" justifyContent="center" alignItems="center">
                     <ResponsiveContainer width="100%" height={250}>
                         <PieChart>
                             <Pie
-                                data={chartData}
+                                data={pieData}
                                 dataKey="value"
                                 nameKey="name"
                                 cx="50%"
@@ -89,35 +136,36 @@ export default function CopilotPremiumPieCard({ data }) {
                     </Box>
                 </Box>
 
-                <HStack gap={2} mt={2} justifyContent="center" flexWrap="wrap">
-                    {chartData.map((entry, idx) => (
+                <SimpleGrid columns={2} gap={2} mt={2} maxW="423px" mx="auto">
+                    {chartData.map((item) => (
                         <HStack
-                            key={entry.name}
+                            key={item.name}
                             gap={2}
                             px={3}
                             py={1}
+                            minH="56px"
+                            w="100%"
                             borderRadius="md"
-                            bg="gray.50"
+                            bg={item.bg}
                             borderWidth="1px"
-                            borderColor="gray.200"
+                            borderColor={item.border}
                         >
-                            <Box
-                                w={3}
-                                h={3}
-                                borderRadius="full"
-                                bg={entry.fill ?? COLORS[idx % COLORS.length]}
-                            />
+                            {item.showDot !== false && (
+                                <Box w={3} h={3} borderRadius="full" bg={item.fill} />
+                            )}
                             <VStack gap={0} align="start">
-                                <Text fontSize="xs" color="gray.500" fontWeight="600">
-                                    {entry.name}
+                                <Text fontSize="xs" color={item.labelColor} fontWeight="600">
+                                    {item.name}
                                 </Text>
-                                <Text fontSize="sm" fontWeight="bold" color="gray.700">
-                                    {formatRequestCount(entry.value)}
+                                <Text fontSize="sm" fontWeight="bold" color={item.valueColor}>
+                                    {item.format === "currency"
+                                        ? formatUSD(item.value)
+                                        : formatRequestCount(item.value)}
                                 </Text>
                             </VStack>
                         </HStack>
                     ))}
-                </HStack>
+                </SimpleGrid>
             </Card.Body>
         </Card.Root>
     );

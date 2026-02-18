@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    Code,
     Box,
     Card,
     Heading,
@@ -10,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import {
+    formatLocalDateTime,
     formatLocalDateTimeWithZone,
     formatPercent,
 } from "../../utils/formatters.js";
@@ -162,13 +164,12 @@ export default function CodexLimitsPieCard({ data }) {
             h="100%"
         >
             <Card.Body p={4}>
-                <Heading size="sm" mb={2}>
-                    ChatGPT Codex Allowance
+                <Heading size="md" mb={7}>
+                    ChatGPT Plus Codex Allowance
                 </Heading>
-                <Text fontSize="xs" color="gray.500" mb={2}>
-                    Plan: {planType}
+                <Text fontSize="xs" color="gray.500" mb={3}>
+                    Last updated: <Code fontSize="xs">{formatLocalDateTime(data?.fetchedAt)}</Code>
                 </Text>
-                <Separator mb={3} />
 
                 <SimpleGrid columns={{ base: 1, md: 2 }} gap={3}>
                     <WindowPie
@@ -180,6 +181,7 @@ export default function CodexLimitsPieCard({ data }) {
                         windowData={secondary}
                     />
                 </SimpleGrid>
+
             </Card.Body>
         </Card.Root>
     );
