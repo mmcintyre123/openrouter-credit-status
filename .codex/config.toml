@@ -1,0 +1,9 @@
+[mcp_servers.playwright]
+command = "C:\\Users\\mmcin\\.codex\\playwright-mcp-cdp-first-9223.cmd"
+args = []
+
+[mcp_servers.playwright.env]
+NPM_CONFIG_OFFLINE = "false"
+HTTP_PROXY = ""
+HTTPS_PROXY = ""
+ALL_PROXY = ""
