@@ -1,43 +1,46 @@
+import {
+    Box,
+    Card,
+    Code,
+    Heading,
+    HStack,
+    Text,
+    VStack,
+} from "@chakra-ui/react";
 import React from "react";
-import { Box, Card, Code, Heading, HStack, Text, VStack } from "@chakra-ui/react";
-import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import { formatLocalDateTime, formatPercent, formatUSD } from "../../utils/formatters.js";
+import {
+    Pie,
+    PieChart,
+    Tooltip as RechartsTooltip,
+    ResponsiveContainer,
+} from "recharts";
+import {
+    formatLocalDateTime,
+    formatPercent,
+    formatUSD,
+} from "../../utils/formatters.js";
+import { InfoTooltip, PieTooltip } from "../PieTooltip.jsx";
 
-const COLORS = ["#3182ce", "#38a169"];
-
-function OpenRouterTooltip({ active, payload }) {
-    if (!active || !payload || !payload.length) return null;
-
-    return (
-        <Box
-            bg="gray.800"
-            color="white"
-            p={3}
-            borderRadius="md"
-            fontSize="sm"
-            boxShadow="lg"
-        >
-            {payload.map((item) => (
-                <Text key={item.name} fontWeight="semibold">
-                    {item.name}: {formatUSD(item.value)}
-                </Text>
-            ))}
-        </Box>
-    );
-}
+const COLORS = ["#38a169", "#3182ce"];
 
 export default function OpenRouterBudgetPieCard({ data }) {
     const percent = Number(data?.percentRemaining ?? 0);
-    const chartData = React.useMemo(
+    const totalLimit = Number(data?.totalLimit ?? 0);
+    const remaining = Number(data?.remaining ?? 0);
+    const budgetUsed = Number(data?.budgetUsed ?? 0);
+    const providerDailyUsage = Number(data?.providerDailyUsage ?? 0);
+    const sessionUsage = Number(data?.sessionUsage ?? 0);
+    const allTimeUsage = Number(data?.usage ?? 0);
+    const pieData = React.useMemo(
         () => [
-            { name: "Used", value: Number(data?.usage ?? 0), fill: COLORS[0] },
             {
-                name: "Remaining",
-                value: Number(data?.remaining ?? 0),
+                name: "Used (Current Budget)",
+                value: budgetUsed,
                 fill: COLORS[1],
             },
+            { name: "Total Remaining", value: remaining, fill: COLORS[0] },
         ],
-        [data],
+        [budgetUsed, remaining],
     );
 
     return (
@@ -55,7 +58,10 @@ export default function OpenRouterBudgetPieCard({ data }) {
                     Reset: {String(data?.resetPeriod || "N/A")}
                 </Text>
                 <Text fontSize="xs" color="gray.500" mb={2}>
-                    Last updated: <Code fontSize="xs">{formatLocalDateTime(data?.fetchedAt)}</Code>
+                    Last updated:{" "}
+                    <Code fontSize="xs">
+                        {formatLocalDateTime(data?.fetchedAt)}
+                    </Code>
                 </Text>
 
                 <Box
@@ -67,7 +73,7 @@ export default function OpenRouterBudgetPieCard({ data }) {
                     <ResponsiveContainer width="100%" height={250}>
                         <PieChart>
                             <Pie
-                                data={chartData}
+                                data={pieData}
                                 dataKey="value"
                                 nameKey="name"
                                 cx="50%"
@@ -77,7 +83,7 @@ export default function OpenRouterBudgetPieCard({ data }) {
                                 label={false}
                                 paddingAngle={4}
                             />
-                            <Tooltip content={<OpenRouterTooltip />} />
+                            <RechartsTooltip content={<PieTooltip />} />
                         </PieChart>
                     </ResponsiveContainer>
 
@@ -104,7 +110,7 @@ export default function OpenRouterBudgetPieCard({ data }) {
                 </Box>
 
                 <HStack gap={2} mt={2} justifyContent="center" flexWrap="wrap">
-                    {chartData.map((entry, idx) => (
+                    {pieData.map((entry) => (
                         <HStack
                             key={entry.name}
                             gap={2}
@@ -119,7 +125,7 @@ export default function OpenRouterBudgetPieCard({ data }) {
                                 w={3}
                                 h={3}
                                 borderRadius="full"
-                                bg={entry.fill ?? COLORS[idx % COLORS.length]}
+                                bg={entry.fill}
                             />
                             <VStack gap={0} align="start">
                                 <Text
@@ -148,18 +154,105 @@ export default function OpenRouterBudgetPieCard({ data }) {
                         borderWidth="1px"
                         borderColor="gray.200"
                     >
-                        <Box w={3} h={3} borderRadius="full" bg="#3182ce" />
+                        <Box w={3} h={3} borderRadius="full" bg="#718096" />
                         <VStack gap={0} align="start">
-                            <Text fontSize="xs" color="gray.500" fontWeight="600">
+                            <Text
+                                fontSize="xs"
+                                color="gray.500"
+                                fontWeight="600"
+                            >
                                 Total Limit
                             </Text>
-                            <Text fontSize="sm" fontWeight="bold" color="gray.700">
-                                {formatUSD(data?.totalLimit)}
+                            <Text
+                                fontSize="sm"
+                                fontWeight="bold"
+                                color="gray.700"
+                            >
+                                {formatUSD(totalLimit)}
+                            </Text>
+                        </VStack>
+                    </HStack>
+                    <HStack
+                        gap={2}
+                        px={3}
+                        py={1}
+                        borderRadius="md"
+                        bg="gray.50"
+                        borderWidth="1px"
+                        borderColor="gray.200"
+                    >
+                        <Box w={3} h={3} borderRadius="full" bg="#3182ce" />
+                        <VStack gap={0} align="start">
+                            <InfoTooltip
+                                //
+                                // label="OpenRouter `usage_daily` may currently be inaccurate due to a known provider-side issue."
+                            >
+                                Provider Daily Usage
+                            </InfoTooltip>
+                            <Text
+                                fontSize="sm"
+                                fontWeight="bold"
+                                color="gray.700"
+                            >
+                                {formatUSD(providerDailyUsage)}
+                            </Text>
+                        </VStack>
+                    </HStack>
+                    <HStack
+                        gap={2}
+                        px={3}
+                        py={1}
+                        borderRadius="md"
+                        bg="gray.50"
+                        borderWidth="1px"
+                        borderColor="gray.200"
+                    >
+                        <Box w={3} h={3} borderRadius="full" bg="#3182ce" />
+                        <VStack gap={0} align="start">
+                            <Text
+                                fontSize="xs"
+                                color="gray.500"
+                                fontWeight="600"
+                            >
+                                Session Usage
+                            </Text>
+                            <Text
+                                fontSize="sm"
+                                fontWeight="bold"
+                                color="gray.700"
+                            >
+                                {formatUSD(sessionUsage)}
+                            </Text>
+                        </VStack>
+                    </HStack>
+                    <HStack
+                        gap={2}
+                        px={3}
+                        py={1}
+                        borderRadius="md"
+                        bg="gray.50"
+                        borderWidth="1px"
+                        borderColor="gray.200"
+                    >
+                        <Box w={3} h={3} borderRadius="full" bg="#718096" />
+                        <VStack gap={0} align="start">
+                            <Text
+                                fontSize="xs"
+                                color="gray.500"
+                                fontWeight="600"
+                            >
+                                All-Time Used
+                            </Text>
+                            <Text
+                                fontSize="sm"
+                                fontWeight="bold"
+                                color="gray.700"
+                            >
+                                {formatUSD(allTimeUsage)}
                             </Text>
                         </VStack>
                     </HStack>
                 </HStack>
-
             </Card.Body>
         </Card.Root>
     );

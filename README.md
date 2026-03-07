@@ -202,3 +202,6 @@ ALL_PROXY = ""
 - Recharts
 - Flask + requests + flask-cors
 - debugpy
+
+## TODO 
+- Sometimes tooltips in the pie charts (from PieTooltip) get stuck when the window loses focus. They need to go away more reliably.
