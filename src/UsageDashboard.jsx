@@ -70,10 +70,19 @@ export default function UsageDashboard() {
                         />
                     )}
 
-                    <SimpleGrid columns={{ base: 1, xl: 3 }} gap={3}>
-                        {openRouterPie}
-                        {copilotPie}
-                        {codexPie}
+                    <SimpleGrid
+                        columns={{ base: 1, md: 2, xl: 3 }}
+                        gap={{ base: 3, md: 2, xl: 3 }}
+                        alignItems="stretch"
+                    >
+                        <Box minW={0}>{openRouterPie}</Box>
+                        <Box minW={0}>{copilotPie}</Box>
+                        <Box
+                            minW={0}
+                            gridColumn={{ base: "auto", md: "1 / -1", xl: "auto" }}
+                        >
+                            {codexPie}
+                        </Box>
                     </SimpleGrid>
                 </VStack>
             </Box>

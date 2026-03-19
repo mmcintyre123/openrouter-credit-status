@@ -270,6 +270,15 @@ This work should be considered complete when:
 
 ## Current Review Status
 
-Planned only. No implementation has been started yet.
+Implemented.
 
-This document is ready for review and revision before code changes begin.
+Completed work summary:
+
+1. Added a dashboard-level compact mode control for the OpenRouter and GitHub Copilot cards.
+2. Added per-card compact toggles for the OpenRouter and GitHub Copilot cards.
+3. Updated both eligible cards so the entire metrics section under each pie chart can collapse.
+4. Preserved the title, chart, center text, and explicit expand or collapse control in compact mode.
+5. Added compact-mode spacing and transition adjustments so collapsed cards feel intentional.
+6. Left the Codex card unchanged, consistent with the original scope.
+
+The implemented behavior matches the approved scope and acceptance criteria for this phase.

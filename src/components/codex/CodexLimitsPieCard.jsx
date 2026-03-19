@@ -51,7 +51,7 @@ function WindowPie({ windowLabel, windowData }) {
                 borderWidth="1px"
                 borderColor="gray.200"
                 borderRadius="md"
-                p={3}
+                p={{ base: 3, md: 2.5, xl: 3 }}
                 h="100%"
             >
                 <Text fontSize="sm" fontWeight="700" color="gray.700" mb={2}>
@@ -76,7 +76,7 @@ function WindowPie({ windowLabel, windowData }) {
             borderWidth="1px"
             borderColor="gray.200"
             borderRadius="md"
-            p={3}
+            p={{ base: 3, md: 2.5, xl: 3 }}
             h="100%"
         >
             <Text fontSize="sm" fontWeight="700" color="gray.700" mb={2}>
@@ -88,8 +88,9 @@ function WindowPie({ windowLabel, windowData }) {
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
+                h={{ base: "180px", md: "164px", xl: "180px" }}
             >
-                <ResponsiveContainer width="100%" height={180}>
+                <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                         <Pie
                             data={chartData}
@@ -115,7 +116,7 @@ function WindowPie({ windowLabel, windowData }) {
                     pointerEvents="none"
                 >
                     <Text
-                        fontSize={{ base: "xl", xl: "2xl" }}
+                        fontSize={{ base: "xl", md: "lg", xl: "2xl" }}
                         fontWeight="900"
                         color="gray.700"
                         lineHeight="1"
@@ -162,15 +163,15 @@ export default function CodexLimitsPieCard({ data }) {
             borderColor="gray.200"
             h="100%"
         >
-            <Card.Body p={4}>
-                <Heading size="md" mb={7}>
+            <Card.Body p={{ base: 4, md: 3, xl: 4 }}>
+                <Heading size="md" mb={{ base: 7, md: 5, xl: 7 }}>
                     ChatGPT Plus Codex Allowance
                 </Heading>
                 <Text fontSize="xs" color="gray.500" mb={3}>
                     Last updated: <Code fontSize="xs">{formatLocalDateTime(data?.fetchedAt)}</Code>
                 </Text>
 
-                <SimpleGrid columns={{ base: 1, md: 2 }} gap={3}>
+                <SimpleGrid columns={{ base: 1, md: 2 }} gap={{ base: 3, md: 2, xl: 3 }}>
                     <WindowPie
                         windowLabel="5-Hour Limit"
                         windowData={primary}
