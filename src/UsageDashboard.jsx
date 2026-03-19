@@ -18,6 +18,8 @@ export default function UsageDashboard() {
         openRouterPie,
         copilotPie,
         codexPie,
+        isGlobalCompact,
+        toggleGlobalCompact,
     } = useUsageDashboard();
 
     return (
@@ -29,7 +31,12 @@ export default function UsageDashboard() {
             display="flex"
             flexDirection="column"
         >
-            <DashboardHeader onRefresh={refreshAll} loading={isRefreshing} />
+            <DashboardHeader
+                onRefresh={refreshAll}
+                loading={isRefreshing}
+                isCompact={isGlobalCompact}
+                onToggleCompact={toggleGlobalCompact}
+            />
 
             <Box
                 flex="1"

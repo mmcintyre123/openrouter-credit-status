@@ -19,11 +19,17 @@ import {
     formatPercent,
     formatUSD,
 } from "../../utils/formatters.js";
+import CompactCardToggle from "../CompactCardToggle.jsx";
 import { InfoTooltip, PieTooltip } from "../PieTooltip.jsx";
 
 const COLORS = ["#38a169", "#3182ce"];
+const DETAILS_TRANSITION = "max-height 0.18s ease, opacity 0.16s ease, transform 0.18s ease";
+const CARD_TITLE = "OpenRouter Budget Visualization";
 
-export default function OpenRouterBudgetPieCard({ data }) {
+export default function OpenRouterBudgetPieCard({ data, isCompact = false, onToggleCompact }) {
+    const idPrefix = React.useId().replace(/:/g, "");
+    const headingId = `${idPrefix}-heading`;
+    const detailsId = `${idPrefix}-details`;
     const percent = Number(data?.percentRemaining ?? 0);
     const totalLimit = Number(data?.totalLimit ?? 0);
     const remaining = Number(data?.remaining ?? 0);
@@ -50,14 +56,22 @@ export default function OpenRouterBudgetPieCard({ data }) {
             borderColor="gray.200"
             h="100%"
         >
-            <Card.Body p={4}>
-                <Heading size="md" mb={2}>
-                    OpenRouter Budget Visualization
-                </Heading>
+            <Card.Body p={isCompact ? 3 : 4}>
+                <HStack justify="space-between" align="flex-start" mb={2}>
+                    <Heading id={headingId} size="md">
+                        {CARD_TITLE}
+                    </Heading>
+                    <CompactCardToggle
+                        isCompact={isCompact}
+                        title={CARD_TITLE}
+                        controlsId={detailsId}
+                        onToggle={onToggleCompact}
+                    />
+                </HStack>
                 <Text fontSize="xs" color="gray.500" mb={2}>
                     Reset: {String(data?.resetPeriod || "N/A")}
                 </Text>
-                <Text fontSize="xs" color="gray.500" mb={2}>
+                <Text fontSize="xs" color="gray.500" mb={isCompact ? -1 : -3}>
                     Last updated:{" "}
                     <Code fontSize="xs">
                         {formatLocalDateTime(data?.fetchedAt)}
@@ -69,8 +83,11 @@ export default function OpenRouterBudgetPieCard({ data }) {
                     display="flex"
                     justifyContent="center"
                     alignItems="center"
+                    transition="padding 0.18s ease"
+                    pt={isCompact ? 1 : 0}
+                    pb={isCompact ? 0 : 1}
                 >
-                    <ResponsiveContainer width="100%" height={250}>
+                    <ResponsiveContainer width="100%" height={isCompact ? 228 : 250}>
                         <PieChart>
                             <Pie
                                 data={pieData}
@@ -109,7 +126,19 @@ export default function OpenRouterBudgetPieCard({ data }) {
                     </Box>
                 </Box>
 
-                <HStack gap={2} mt={2} justifyContent="center" flexWrap="wrap">
+                <Box
+                    id={detailsId}
+                    role="region"
+                    aria-labelledby={headingId}
+                    aria-hidden={isCompact}
+                    overflow="hidden"
+                    maxHeight={isCompact ? "0px" : "800px"}
+                    opacity={isCompact ? 0 : 1}
+                    transform={isCompact ? "translateY(-6px)" : "translateY(0)"}
+                    pointerEvents={isCompact ? "none" : "auto"}
+                    style={{ transition: DETAILS_TRANSITION }}
+                >
+                    <HStack gap={2} mt={0} justifyContent="center" flexWrap="wrap">
                     {pieData.map((entry) => (
                         <HStack
                             key={entry.name}
@@ -154,7 +183,6 @@ export default function OpenRouterBudgetPieCard({ data }) {
                         borderWidth="1px"
                         borderColor="gray.200"
                     >
-                        <Box w={3} h={3} borderRadius="full" bg="#718096" />
                         <VStack gap={0} align="start">
                             <Text
                                 fontSize="xs"
@@ -183,12 +211,7 @@ export default function OpenRouterBudgetPieCard({ data }) {
                     >
                         <Box w={3} h={3} borderRadius="full" bg="#3182ce" />
                         <VStack gap={0} align="start">
-                            <InfoTooltip
-                                //
-                                // label="OpenRouter `usage_daily` may currently be inaccurate due to a known provider-side issue."
-                            >
-                                Provider Daily Usage
-                            </InfoTooltip>
+                            <InfoTooltip>Provider Daily Usage</InfoTooltip>
                             <Text
                                 fontSize="sm"
                                 fontWeight="bold"
@@ -234,7 +257,6 @@ export default function OpenRouterBudgetPieCard({ data }) {
                         borderWidth="1px"
                         borderColor="gray.200"
                     >
-                        <Box w={3} h={3} borderRadius="full" bg="#718096" />
                         <VStack gap={0} align="start">
                             <Text
                                 fontSize="xs"
@@ -252,7 +274,8 @@ export default function OpenRouterBudgetPieCard({ data }) {
                             </Text>
                         </VStack>
                     </HStack>
-                </HStack>
+                    </HStack>
+                </Box>
             </Card.Body>
         </Card.Root>
     );

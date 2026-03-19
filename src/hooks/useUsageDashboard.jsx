@@ -67,6 +67,24 @@ export function useUsageDashboard() {
         refresh: refreshCodex,
     } = useApiResource(API_ENDPOINTS.codexLimits);
 
+    const [isGlobalCompact, setIsGlobalCompact] = React.useState(false);
+    const [cardCompact, setCardCompact] = React.useState({
+        openrouter: false,
+        copilot: false,
+    });
+
+    const toggleGlobalCompact = React.useCallback(() => {
+        setIsGlobalCompact((prev) => {
+            const next = !prev;
+            setCardCompact({ openrouter: next, copilot: next });
+            return next;
+        });
+    }, []);
+
+    const toggleCardCompact = React.useCallback((cardKey) => {
+        setCardCompact((prev) => ({ ...prev, [cardKey]: !prev[cardKey] }));
+    }, []);
+
     const refreshAll = React.useCallback(async () => {
         await Promise.allSettled([
             refreshOpenRouter(),
@@ -95,7 +113,11 @@ export function useUsageDashboard() {
     const showCodexRefreshError = codexStatus === "error" && Boolean(codexData);
 
     const openRouterPie = openRouterData ? (
-        <OpenRouterBudgetPieCard data={openRouterData} />
+        <OpenRouterBudgetPieCard
+            data={openRouterData}
+            isCompact={cardCompact.openrouter}
+            onToggleCompact={() => toggleCardCompact("openrouter")}
+        />
     ) : openRouterStatus === "error" ? (
         <ErrorCard
             label="OpenRouter Budget Visualization"
@@ -106,7 +128,11 @@ export function useUsageDashboard() {
     );
 
     const copilotPie = copilotData ? (
-        <CopilotPremiumPieCard data={copilotData} />
+        <CopilotPremiumPieCard
+            data={copilotData}
+            isCompact={cardCompact.copilot}
+            onToggleCompact={() => toggleCardCompact("copilot")}
+        />
     ) : copilotStatus === "error" ? (
         <ErrorCard
             label="Copilot Included Pool Visualization"
@@ -138,5 +164,7 @@ export function useUsageDashboard() {
         openRouterPie,
         copilotPie,
         codexPie,
+        isGlobalCompact,
+        toggleGlobalCompact,
     };
 }
