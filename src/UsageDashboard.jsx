@@ -7,14 +7,12 @@ export default function UsageDashboard() {
     const {
         refreshAll,
         isRefreshing,
-        showLowBudgetWarning,
         showOpenRouterRefreshError,
         showCopilotRefreshError,
         showCodexRefreshError,
         openRouterError,
         copilotError,
         codexError,
-        openRouterData,
         openRouterPie,
         copilotPie,
         codexPie,
@@ -45,12 +43,6 @@ export default function UsageDashboard() {
                 overflow={{ base: "visible", xl: "hidden" }}
             >
                 <VStack align="stretch" gap={3} h="full">
-                    {showLowBudgetWarning && openRouterData && (
-                        <SectionAlert
-                            status="warning"
-                            message="Warning: you have less than 10% of your OpenRouter budget left."
-                        />
-                    )}
                     {showOpenRouterRefreshError && (
                         <SectionAlert
                             status="error"

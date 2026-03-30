@@ -103,9 +103,6 @@ export function useUsageDashboard() {
         openRouterStatus === "loading" ||
         copilotStatus === "loading" ||
         codexStatus === "loading";
-    const openRouterPercent = Number(openRouterData?.percentRemaining ?? 0);
-    const showLowBudgetWarning =
-        Boolean(openRouterData?.warningLowBudget) || openRouterPercent < 10;
     const showOpenRouterRefreshError =
         openRouterStatus === "error" && Boolean(openRouterData);
     const showCopilotRefreshError =
@@ -153,14 +150,13 @@ export function useUsageDashboard() {
     return {
         refreshAll,
         isRefreshing,
-        showLowBudgetWarning,
+        // showLowBudgetWarning,
         showOpenRouterRefreshError,
         showCopilotRefreshError,
         showCodexRefreshError,
         openRouterError,
         copilotError,
         codexError,
-        openRouterData,
         openRouterPie,
         copilotPie,
         codexPie,

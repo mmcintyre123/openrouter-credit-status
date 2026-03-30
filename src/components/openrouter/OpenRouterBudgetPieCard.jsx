@@ -16,6 +16,7 @@ import {
 } from "recharts";
 import {
     formatLocalDateTime,
+    formatLocalDateTimeWithZone,
     formatPercent,
     formatUSD,
 } from "../../utils/formatters.js";
@@ -37,6 +38,9 @@ export default function OpenRouterBudgetPieCard({ data, isCompact = false, onTog
     const providerDailyUsage = Number(data?.providerDailyUsage ?? 0);
     const sessionUsage = Number(data?.sessionUsage ?? 0);
     const allTimeUsage = Number(data?.usage ?? 0);
+    // Keep the tooltip available even if the running backend has not reloaded yet
+    // and therefore is not returning the new `sessionStartedAt` field.
+    const sessionUsageTooltipLabel = `Since first successful OpenRouter fetch in this API process at ${formatLocalDateTimeWithZone(data?.sessionStartedAt)}`
     const pieData = React.useMemo(
         () => [
             {
@@ -232,13 +236,7 @@ export default function OpenRouterBudgetPieCard({ data, isCompact = false, onTog
                     >
                         <Box w={3} h={3} borderRadius="full" bg="#3182ce" />
                         <VStack gap={0} align="start">
-                            <Text
-                                fontSize="xs"
-                                color="gray.500"
-                                fontWeight="600"
-                            >
-                                Session Usage
-                            </Text>
+                            <InfoTooltip label={sessionUsageTooltipLabel}>Session Usage</InfoTooltip>
                             <Text
                                 fontSize="sm"
                                 fontWeight="bold"

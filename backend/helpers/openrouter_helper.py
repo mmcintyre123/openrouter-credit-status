@@ -6,6 +6,14 @@ from backend.helpers.common import ServiceError, now_iso
 # Module-level baseline for session usage tracking. Initialized on first request per process lifetime.
 # NOTE: Not thread-safe — assumes single-threaded or single-worker deployment (typical for this dashboard).
 OPENROUTER_SESSION_BASELINE_USAGE = None
+OPENROUTER_SESSION_BASELINE_SET_AT = None
+
+
+def _set_session_baseline(usage_value):
+    global OPENROUTER_SESSION_BASELINE_USAGE, OPENROUTER_SESSION_BASELINE_SET_AT
+
+    OPENROUTER_SESSION_BASELINE_USAGE = usage_value
+    OPENROUTER_SESSION_BASELINE_SET_AT = now_iso()
 
 
 def _compute_session_usage(all_time_usage):
@@ -16,15 +24,15 @@ def _compute_session_usage(all_time_usage):
     :returns: Non-negative float usage delta from the process-session baseline.
     :raises: None.
     """
-    global OPENROUTER_SESSION_BASELINE_USAGE
+    global OPENROUTER_SESSION_BASELINE_USAGE, OPENROUTER_SESSION_BASELINE_SET_AT
 
     usage_value = float(all_time_usage or 0)
     if OPENROUTER_SESSION_BASELINE_USAGE is None:
-        OPENROUTER_SESSION_BASELINE_USAGE = usage_value
+        _set_session_baseline(usage_value)
 
     # If upstream value decreases (provider reset/anomaly), clamp baseline to maintain non-negative session delta.
     if usage_value < OPENROUTER_SESSION_BASELINE_USAGE:
-        OPENROUTER_SESSION_BASELINE_USAGE = usage_value
+        _set_session_baseline(usage_value)
 
     return max(usage_value - OPENROUTER_SESSION_BASELINE_USAGE, 0.0)
 
@@ -74,7 +82,6 @@ def fetch_openrouter_balance(api_key):
 
     # percent_remaining drives the center label and low-budget warning threshold.
     percent_remaining = (remaining / total_limit * 100) if total_limit > 0 else 0
-    warning_low_budget = percent_remaining < 10
 
     return {
         "totalLimit": total_limit,
@@ -86,7 +93,7 @@ def fetch_openrouter_balance(api_key):
         "usageMonthly": usage_monthly,
         "providerDailyUsage": usage_daily,
         "sessionUsage": session_usage,
+        "sessionStartedAt": OPENROUTER_SESSION_BASELINE_SET_AT,
         "percentRemaining": round(percent_remaining, 1),
-        "warningLowBudget": warning_low_budget,
         "fetchedAt": now_iso(),
     }
