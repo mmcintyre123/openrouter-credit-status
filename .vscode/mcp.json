@@ -1,0 +1,16 @@
+{
+	"servers": {
+		"io.github.ChromeDevTools/chrome-devtools-mcp-9223": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"chrome-devtools-mcp@latest",
+				"--browser-url=http://127.0.0.1:9223"
+			],
+			"env": {
+				"SystemRoot": "C:\\Windows",
+				"PROGRAMFILES": "C:\\Program Files"
+			},
+		}
+	}
+}
