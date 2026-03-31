@@ -171,7 +171,9 @@ export default function CodexLimitsPieCard({ data }) {
                     Last updated: <Code fontSize="xs">{formatLocalDateTime(data?.fetchedAt)}</Code>
                 </Text>
 
-                <SimpleGrid columns={{ base: 1, md: 2 }} gap={{ base: 3, md: 2, xl: 3 }}>
+                {/* Match the dashboard breakpoint so the two Codex limit cards sit side by side
+                    at the same medium-narrow desktop widths. */}
+                <SimpleGrid columns={{ base: 1, sm: 2 }} gap={{ base: 3, sm: 2, xl: 3 }}>
                     <WindowPie
                         windowLabel="5-Hour Limit"
                         windowData={primary}

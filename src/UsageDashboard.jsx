@@ -63,15 +63,18 @@ export default function UsageDashboard() {
                     )}
 
                     <SimpleGrid
-                        columns={{ base: 1, md: 2, xl: 3 }}
-                        gap={{ base: 3, md: 2, xl: 3 }}
+                        // Switch to a 2-up layout earlier so medium-narrow desktop widths
+                        // keep the OpenRouter and Copilot cards side by side.
+                        columns={{ base: 1, sm: 2, xl: 3 }}
+                        gap={{ base: 3, sm: 2, xl: 3 }}
                         alignItems="stretch"
                     >
                         <Box minW={0}>{openRouterPie}</Box>
                         <Box minW={0}>{copilotPie}</Box>
                         <Box
                             minW={0}
-                            gridColumn={{ base: "auto", md: "1 / -1", xl: "auto" }}
+                            // Let the Codex card span the full second row until the wide 3-column layout.
+                            gridColumn={{ base: "auto", sm: "1 / -1", xl: "auto" }}
                         >
                             {codexPie}
                         </Box>
