@@ -15,6 +15,7 @@ import {
     formatLocalDateTimeWithZone,
     formatPercent,
 } from "../../utils/formatters.js";
+import { useRechartsTooltipDismissal } from "../../hooks/useRechartsTooltipDismissal.js";
 
 const COLORS = ["#2b6cb0", "#48bb78"];
 
@@ -45,6 +46,12 @@ function CodexTooltip({ active, payload }) {
 }
 
 function WindowPie({ windowLabel, windowData }) {
+    const {
+        chartSurfaceProps,
+        tooltipInstanceKey,
+        tooltipProps,
+    } = useRechartsTooltipDismissal({ enabled: Boolean(windowData) });
+
     if (!windowData) {
         return (
             <Box
@@ -89,6 +96,7 @@ function WindowPie({ windowLabel, windowData }) {
                 justifyContent="center"
                 alignItems="center"
                 h={{ base: "180px", md: "164px", xl: "180px" }}
+                {...chartSurfaceProps}
             >
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -103,7 +111,11 @@ function WindowPie({ windowLabel, windowData }) {
                             label={false}
                             paddingAngle={4}
                         />
-                        <Tooltip content={<CodexTooltip />} />
+                        <Tooltip
+                            key={tooltipInstanceKey}
+                            content={<CodexTooltip />}
+                            {...tooltipProps}
+                        />
                     </PieChart>
                 </ResponsiveContainer>
 
@@ -168,12 +180,18 @@ export default function CodexLimitsPieCard({ data }) {
                     ChatGPT Plus Codex Allowance
                 </Heading>
                 <Text fontSize="xs" color="gray.500" mb={3}>
-                    Last updated: <Code fontSize="xs">{formatLocalDateTime(data?.fetchedAt)}</Code>
+                    Last updated:{" "}
+                    <Code fontSize="xs">
+                        {formatLocalDateTime(data?.fetchedAt)}
+                    </Code>
                 </Text>
 
                 {/* Match the dashboard breakpoint so the two Codex limit cards sit side by side
                     at the same medium-narrow desktop widths. */}
-                <SimpleGrid columns={{ base: 1, sm: 2 }} gap={{ base: 3, sm: 2, xl: 3 }}>
+                <SimpleGrid
+                    columns={{ base: 1, sm: 2 }}
+                    gap={{ base: 3, sm: 2, xl: 3 }}
+                >
                     <WindowPie
                         windowLabel="5-Hour Limit"
                         windowData={primary}
@@ -183,7 +201,6 @@ export default function CodexLimitsPieCard({ data }) {
                         windowData={secondary}
                     />
                 </SimpleGrid>
-
             </Card.Body>
         </Card.Root>
     );

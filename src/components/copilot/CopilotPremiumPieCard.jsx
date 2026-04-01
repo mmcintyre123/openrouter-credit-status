@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import CompactCardToggle from "../CompactCardToggle.jsx";
+import { useRechartsTooltipDismissal } from "../../hooks/useRechartsTooltipDismissal.js";
 import {
     formatLocalDateTime,
     formatUSD,
@@ -19,7 +20,8 @@ import {
 } from "../../utils/formatters.js";
 
 const COLORS = ["#3182ce", "#38a169"];
-const DETAILS_TRANSITION = "max-height 0.18s ease, opacity 0.16s ease, transform 0.18s ease";
+const DETAILS_TRANSITION =
+    "max-height 0.18s ease, opacity 0.16s ease, transform 0.18s ease";
 const CARD_TITLE = "GitHub Copilot Pro Budget Visualization";
 
 function CopilotTooltip({ active, payload }) {
@@ -43,7 +45,11 @@ function CopilotTooltip({ active, payload }) {
     );
 }
 
-export default function CopilotPremiumPieCard({ data, isCompact = false, onToggleCompact }) {
+export default function CopilotPremiumPieCard({
+    data,
+    isCompact = false,
+    onToggleCompact,
+}) {
     const idPrefix = React.useId().replace(/:/g, "");
     const headingId = `${idPrefix}-heading`;
     const detailsId = `${idPrefix}-details`;
@@ -116,6 +122,11 @@ export default function CopilotPremiumPieCard({ data, isCompact = false, onToggl
     const includedRemaining = Number(pieData[1]?.value ?? 0);
     const percentRemaining =
         monthlyLimit > 0 ? (includedRemaining / monthlyLimit) * 100 : 0;
+    const {
+        chartSurfaceProps,
+        tooltipInstanceKey,
+        tooltipProps,
+    } = useRechartsTooltipDismissal();
 
     return (
         <Card.Root
@@ -125,7 +136,11 @@ export default function CopilotPremiumPieCard({ data, isCompact = false, onToggl
             h="100%"
         >
             <Card.Body p={isCompact ? 3 : 4}>
-                <HStack justify="space-between" align="flex-start" mb={{ base: 2, xl: 0 }}>
+                <HStack
+                    justify="space-between"
+                    align="flex-start"
+                    mb={{ base: 2, xl: 0 }}
+                >
                     <Heading id={headingId} size="md">
                         {CARD_TITLE}
                     </Heading>
@@ -154,8 +169,12 @@ export default function CopilotPremiumPieCard({ data, isCompact = false, onToggl
                     transition="padding 0.18s ease"
                     pt={isCompact ? 1 : 0}
                     pb={isCompact ? 0 : 1}
+                    {...chartSurfaceProps}
                 >
-                    <ResponsiveContainer width="100%" height={isCompact ? 228 : 250}>
+                    <ResponsiveContainer
+                        width="100%"
+                        height={isCompact ? 228 : 250}
+                    >
                         <PieChart>
                             <Pie
                                 data={pieData}
@@ -168,7 +187,11 @@ export default function CopilotPremiumPieCard({ data, isCompact = false, onToggl
                                 label={false}
                                 paddingAngle={4}
                             />
-                            <Tooltip content={<CopilotTooltip />} />
+                            <Tooltip
+                                key={tooltipInstanceKey}
+                                content={<CopilotTooltip />}
+                                {...tooltipProps}
+                            />
                         </PieChart>
                     </ResponsiveContainer>
 
@@ -189,7 +212,9 @@ export default function CopilotPremiumPieCard({ data, isCompact = false, onToggl
                             {formatPercent(percentRemaining)}
                         </Text>
                         <Text fontSize="xs" color="gray.500" mt={1}>
-                            Remaining:<br/>{formatRequestCount(includedRemaining)} /{" "}
+                            Remaining:
+                            <br />
+                            {formatRequestCount(includedRemaining)} /{" "}
                             {formatRequestCount(monthlyLimit)}
                         </Text>
                     </Box>
@@ -207,7 +232,13 @@ export default function CopilotPremiumPieCard({ data, isCompact = false, onToggl
                     pointerEvents={isCompact ? "none" : "auto"}
                     style={{ transition: DETAILS_TRANSITION }}
                 >
-                    <SimpleGrid columns={2} gap={2} mt={0} maxW="423px" mx="auto">
+                    <SimpleGrid
+                        columns={2}
+                        gap={2}
+                        mt={0}
+                        maxW="423px"
+                        mx="auto"
+                    >
                         {chartData.map((item) => (
                             <HStack
                                 key={item.name}

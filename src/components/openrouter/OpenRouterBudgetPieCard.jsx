@@ -20,14 +20,20 @@ import {
     formatPercent,
     formatUSD,
 } from "../../utils/formatters.js";
+import { useRechartsTooltipDismissal } from "../../hooks/useRechartsTooltipDismissal.js";
 import CompactCardToggle from "../CompactCardToggle.jsx";
 import { InfoTooltip, PieTooltip } from "../PieTooltip.jsx";
 
 const COLORS = ["#38a169", "#3182ce"];
-const DETAILS_TRANSITION = "max-height 0.18s ease, opacity 0.16s ease, transform 0.18s ease";
+const DETAILS_TRANSITION =
+    "max-height 0.18s ease, opacity 0.16s ease, transform 0.18s ease";
 const CARD_TITLE = "OpenRouter Budget Visualization";
 
-export default function OpenRouterBudgetPieCard({ data, isCompact = false, onToggleCompact }) {
+export default function OpenRouterBudgetPieCard({
+    data,
+    isCompact = false,
+    onToggleCompact,
+}) {
     const idPrefix = React.useId().replace(/:/g, "");
     const headingId = `${idPrefix}-heading`;
     const detailsId = `${idPrefix}-details`;
@@ -40,7 +46,7 @@ export default function OpenRouterBudgetPieCard({ data, isCompact = false, onTog
     const allTimeUsage = Number(data?.usage ?? 0);
     // Keep the tooltip available even if the running backend has not reloaded yet
     // and therefore is not returning the new `sessionStartedAt` field.
-    const sessionUsageTooltipLabel = `Since first successful OpenRouter fetch in this API process at ${formatLocalDateTimeWithZone(data?.sessionStartedAt)}`
+    const sessionUsageTooltipLabel = `Since first successful OpenRouter fetch in this API process at ${formatLocalDateTimeWithZone(data?.sessionStartedAt)}`;
     const pieData = React.useMemo(
         () => [
             {
@@ -52,6 +58,11 @@ export default function OpenRouterBudgetPieCard({ data, isCompact = false, onTog
         ],
         [budgetUsed, remaining],
     );
+    const {
+        chartSurfaceProps,
+        tooltipInstanceKey,
+        tooltipProps,
+    } = useRechartsTooltipDismissal();
 
     return (
         <Card.Root
@@ -61,7 +72,11 @@ export default function OpenRouterBudgetPieCard({ data, isCompact = false, onTog
             h="100%"
         >
             <Card.Body p={isCompact ? 3 : 4}>
-                <HStack justify="space-between" align="flex-start" mb={{ base: 2, xl: 0 }}>
+                <HStack
+                    justify="space-between"
+                    align="flex-start"
+                    mb={{ base: 2, xl: 0 }}
+                >
                     <Heading id={headingId} size="md">
                         {CARD_TITLE}
                     </Heading>
@@ -90,8 +105,12 @@ export default function OpenRouterBudgetPieCard({ data, isCompact = false, onTog
                     transition="padding 0.18s ease"
                     pt={isCompact ? 1 : 0}
                     pb={isCompact ? 0 : 1}
+                    {...chartSurfaceProps}
                 >
-                    <ResponsiveContainer width="100%" height={isCompact ? 228 : 250}>
+                    <ResponsiveContainer
+                        width="100%"
+                        height={isCompact ? 228 : 250}
+                    >
                         <PieChart>
                             <Pie
                                 data={pieData}
@@ -104,7 +123,11 @@ export default function OpenRouterBudgetPieCard({ data, isCompact = false, onTog
                                 label={false}
                                 paddingAngle={4}
                             />
-                            <RechartsTooltip content={<PieTooltip />} />
+                            <RechartsTooltip
+                                key={tooltipInstanceKey}
+                                content={<PieTooltip />}
+                                {...tooltipProps}
+                            />
                         </PieChart>
                     </ResponsiveContainer>
 
@@ -142,10 +165,48 @@ export default function OpenRouterBudgetPieCard({ data, isCompact = false, onTog
                     pointerEvents={isCompact ? "none" : "auto"}
                     style={{ transition: DETAILS_TRANSITION }}
                 >
-                    <HStack gap={2} mt={0} justifyContent="center" flexWrap="wrap">
-                    {pieData.map((entry) => (
+                    <HStack
+                        gap={2}
+                        mt={0}
+                        justifyContent="center"
+                        flexWrap="wrap"
+                    >
+                        {pieData.map((entry) => (
+                            <HStack
+                                key={entry.name}
+                                gap={2}
+                                px={3}
+                                py={1}
+                                borderRadius="md"
+                                bg="gray.50"
+                                borderWidth="1px"
+                                borderColor="gray.200"
+                            >
+                                <Box
+                                    w={3}
+                                    h={3}
+                                    borderRadius="full"
+                                    bg={entry.fill}
+                                />
+                                <VStack gap={0} align="start">
+                                    <Text
+                                        fontSize="xs"
+                                        color="gray.500"
+                                        fontWeight="600"
+                                    >
+                                        {entry.name}
+                                    </Text>
+                                    <Text
+                                        fontSize="sm"
+                                        fontWeight="bold"
+                                        color="gray.700"
+                                    >
+                                        {formatUSD(entry.value)}
+                                    </Text>
+                                </VStack>
+                            </HStack>
+                        ))}
                         <HStack
-                            key={entry.name}
                             gap={2}
                             px={3}
                             py={1}
@@ -154,124 +215,93 @@ export default function OpenRouterBudgetPieCard({ data, isCompact = false, onTog
                             borderWidth="1px"
                             borderColor="gray.200"
                         >
-                            <Box
-                                w={3}
-                                h={3}
-                                borderRadius="full"
-                                bg={entry.fill}
-                            />
                             <VStack gap={0} align="start">
                                 <Text
                                     fontSize="xs"
                                     color="gray.500"
                                     fontWeight="600"
                                 >
-                                    {entry.name}
+                                    Total Limit
                                 </Text>
                                 <Text
                                     fontSize="sm"
                                     fontWeight="bold"
                                     color="gray.700"
                                 >
-                                    {formatUSD(entry.value)}
+                                    {formatUSD(totalLimit)}
                                 </Text>
                             </VStack>
                         </HStack>
-                    ))}
-                    <HStack
-                        gap={2}
-                        px={3}
-                        py={1}
-                        borderRadius="md"
-                        bg="gray.50"
-                        borderWidth="1px"
-                        borderColor="gray.200"
-                    >
-                        <VStack gap={0} align="start">
-                            <Text
-                                fontSize="xs"
-                                color="gray.500"
-                                fontWeight="600"
-                            >
-                                Total Limit
-                            </Text>
-                            <Text
-                                fontSize="sm"
-                                fontWeight="bold"
-                                color="gray.700"
-                            >
-                                {formatUSD(totalLimit)}
-                            </Text>
-                        </VStack>
-                    </HStack>
-                    <HStack
-                        gap={2}
-                        px={3}
-                        py={1}
-                        borderRadius="md"
-                        bg="gray.50"
-                        borderWidth="1px"
-                        borderColor="gray.200"
-                    >
-                        <Box w={3} h={3} borderRadius="full" bg="#3182ce" />
-                        <VStack gap={0} align="start">
-                            <InfoTooltip>Provider Daily Usage</InfoTooltip>
-                            <Text
-                                fontSize="sm"
-                                fontWeight="bold"
-                                color="gray.700"
-                            >
-                                {formatUSD(providerDailyUsage)}
-                            </Text>
-                        </VStack>
-                    </HStack>
-                    <HStack
-                        gap={2}
-                        px={3}
-                        py={1}
-                        borderRadius="md"
-                        bg="gray.50"
-                        borderWidth="1px"
-                        borderColor="gray.200"
-                    >
-                        <Box w={3} h={3} borderRadius="full" bg="#3182ce" />
-                        <VStack gap={0} align="start">
-                            <InfoTooltip label={sessionUsageTooltipLabel}>Session Usage</InfoTooltip>
-                            <Text
-                                fontSize="sm"
-                                fontWeight="bold"
-                                color="gray.700"
-                            >
-                                {formatUSD(sessionUsage)}
-                            </Text>
-                        </VStack>
-                    </HStack>
-                    <HStack
-                        gap={2}
-                        px={3}
-                        py={1}
-                        borderRadius="md"
-                        bg="gray.50"
-                        borderWidth="1px"
-                        borderColor="gray.200"
-                    >
-                        <VStack gap={0} align="start">
-                            <Text
-                                fontSize="xs"
-                                color="gray.500"
-                                fontWeight="600"
-                            >
-                                All-Time Used
-                            </Text>
-                            <Text
-                                fontSize="sm"
-                                fontWeight="bold"
-                                color="gray.700"
-                            >
-                                {formatUSD(allTimeUsage)}
-                            </Text>
-                        </VStack>
-                    </HStack>
+                        <HStack
+                            gap={2}
+                            px={3}
+                            py={1}
+                            borderRadius="md"
+                            bg="gray.50"
+                            borderWidth="1px"
+                            borderColor="gray.200"
+                        >
+                            <Box w={3} h={3} borderRadius="full" bg="#3182ce" />
+                            <VStack gap={0} align="start">
+                                <InfoTooltip>Provider Daily Usage</InfoTooltip>
+                                <Text
+                                    fontSize="sm"
+                                    fontWeight="bold"
+                                    color="gray.700"
+                                >
+                                    {formatUSD(providerDailyUsage)}
+                                </Text>
+                            </VStack>
+                        </HStack>
+                        <HStack
+                            gap={2}
+                            px={3}
+                            py={1}
+                            borderRadius="md"
+                            bg="gray.50"
+                            borderWidth="1px"
+                            borderColor="gray.200"
+                        >
+                            <Box w={3} h={3} borderRadius="full" bg="#3182ce" />
+                            <VStack gap={0} align="start">
+                                <InfoTooltip label={sessionUsageTooltipLabel}>
+                                    Session Usage
+                                </InfoTooltip>
+                                <Text
+                                    fontSize="sm"
+                                    fontWeight="bold"
+                                    color="gray.700"
+                                >
+                                    {formatUSD(sessionUsage)}
+                                </Text>
+                            </VStack>
+                        </HStack>
+                        <HStack
+                            gap={2}
+                            px={3}
+                            py={1}
+                            borderRadius="md"
+                            bg="gray.50"
+                            borderWidth="1px"
+                            borderColor="gray.200"
+                        >
+                            <VStack gap={0} align="start">
+                                <Text
+                                    fontSize="xs"
+                                    color="gray.500"
+                                    fontWeight="600"
+                                >
+                                    All-Time Used
+                                </Text>
+                                <Text
+                                    fontSize="sm"
+                                    fontWeight="bold"
+                                    color="gray.700"
+                                >
+                                    {formatUSD(allTimeUsage)}
+                                </Text>
+                            </VStack>
+                        </HStack>
                     </HStack>
                 </Box>
             </Card.Body>
