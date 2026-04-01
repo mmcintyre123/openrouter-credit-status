@@ -164,7 +164,7 @@ export default function CodexLimitsPieCard({ data }) {
             h="100%"
         >
             <Card.Body p={{ base: 4, md: 3, xl: 4 }}>
-                <Heading size="md" mb={{ base: 7, md: 5, xl: 7 }}>
+                <Heading size="md" mb={2}>
                     ChatGPT Plus Codex Allowance
                 </Heading>
                 <Text fontSize="xs" color="gray.500" mb={3}>

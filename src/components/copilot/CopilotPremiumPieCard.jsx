@@ -125,7 +125,7 @@ export default function CopilotPremiumPieCard({ data, isCompact = false, onToggl
             h="100%"
         >
             <Card.Body p={isCompact ? 3 : 4}>
-                <HStack justify="space-between" align="flex-start" mb={2}>
+                <HStack justify="space-between" align="flex-start" mb={{ base: 2, xl: 0 }}>
                     <Heading id={headingId} size="md">
                         {CARD_TITLE}
                     </Heading>
