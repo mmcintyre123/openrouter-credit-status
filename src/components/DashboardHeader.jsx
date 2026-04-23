@@ -1,6 +1,14 @@
 import { Box, Button, Heading, HStack } from "@chakra-ui/react";
 
-export default function DashboardHeader({ onRefresh, loading, isCompact, onToggleCompact }) {
+export default function DashboardHeader({
+    title,
+    onRefresh,
+    loading,
+    onOpenCardManager,
+    showCompactToggle,
+    isCompact,
+    onToggleCompact,
+}) {
     return (
         <Box
             bgGradient="to-r"
@@ -14,25 +22,39 @@ export default function DashboardHeader({ onRefresh, loading, isCompact, onToggl
         >
             <HStack justify="space-between" align="center">
                 <Heading size={{ base: "md", xl: "lg" }} fontWeight="bold">
-                    OpenRouter + Copilot + Codex Usage and Limits
+                    {title}
                 </Heading>
                 <HStack gap={2}>
+                    {showCompactToggle && (
+                        <Button
+                            onClick={onToggleCompact}
+                            colorPalette="whiteAlpha"
+                            size="sm"
+                            variant="outline"
+                            aria-label={
+                                isCompact
+                                    ? "Expand usage cards"
+                                    : "Compact usage cards"
+                            }
+                            borderColor="whiteAlpha.500"
+                            color="white"
+                            bg={isCompact ? "whiteAlpha.300" : "transparent"}
+                            _hover={{ bg: "whiteAlpha.400" }}
+                        >
+                            {isCompact ? "Expand Cards" : "Compact Cards"}
+                        </Button>
+                    )}
                     <Button
-                        onClick={onToggleCompact}
+                        onClick={onOpenCardManager}
                         colorPalette="whiteAlpha"
                         size="sm"
                         variant="outline"
-                        aria-label={
-                            isCompact
-                                ? "Expand OpenRouter and Copilot cards"
-                                : "Compact OpenRouter and Copilot cards"
-                        }
+                        aria-label="Manage card visibility"
                         borderColor="whiteAlpha.500"
                         color="white"
-                        bg={isCompact ? "whiteAlpha.300" : "transparent"}
                         _hover={{ bg: "whiteAlpha.400" }}
                     >
-                        {isCompact ? "Expand Cards" : "Compact Cards"}
+                        Manage Cards
                     </Button>
                     <Button
                         onClick={onRefresh}

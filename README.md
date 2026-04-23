@@ -93,6 +93,15 @@ GITHUB_USERNAME=your-github-username
 COPILOT_PRO_MONTHLY_LIMIT=300
 ```
 
+Set frontend-only Vite flags in `.env.local`:
+
+```properties
+VITE_SHOW_OPENROUTER_CARD=true
+```
+
+Use `config/dashboard.properties` for backend values only. Use `.env.local` for
+frontend `VITE_*` flags such as `VITE_SHOW_OPENROUTER_CARD`.
+
 ## Quick Start
 
 1. Install Python dependencies:
