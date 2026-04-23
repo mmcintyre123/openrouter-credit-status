@@ -50,9 +50,7 @@ function clearLegacyCardVisibilityStorage() {
     // Remove stale browser-persistent state from the previous implementation so
     // each new browser/debug session starts from the current env defaults.
     window.localStorage.removeItem(CARD_VISIBILITY_STORAGE_KEY);
-    window.localStorage.removeItem(
-        LEGACY_CARD_VISIBILITY_DEFAULTS_STORAGE_KEY,
-    );
+    window.localStorage.removeItem(LEGACY_CARD_VISIBILITY_DEFAULTS_STORAGE_KEY);
 }
 
 function readStoredCardVisibility() {
@@ -148,8 +146,9 @@ export function useUsageDashboard() {
     } = useApiResource(API_ENDPOINTS.codexLimits);
 
     const [isCardManagerOpen, setIsCardManagerOpen] = React.useState(false);
-    const [cardVisibility, setCardVisibilityState] =
-        React.useState(readStoredCardVisibility);
+    const [cardVisibility, setCardVisibilityState] = React.useState(
+        readStoredCardVisibility,
+    );
     const [cardCompact, setCardCompact] = React.useState({
         openrouter: false,
         copilot: false,
@@ -237,9 +236,7 @@ export function useUsageDashboard() {
             refreshActions.push(refreshCodex());
         }
 
-        await Promise.allSettled([
-            ...refreshActions,
-        ]);
+        await Promise.allSettled([...refreshActions]);
     }, [cardVisibility, refreshCodex, refreshCopilot, refreshOpenRouter]);
 
     React.useEffect(() => {
@@ -261,9 +258,7 @@ export function useUsageDashboard() {
         copilotStatus === "error" &&
         Boolean(copilotData);
     const showCodexRefreshError =
-        cardVisibility.codex &&
-        codexStatus === "error" &&
-        Boolean(codexData);
+        cardVisibility.codex && codexStatus === "error" && Boolean(codexData);
 
     const openRouterPie = openRouterData ? (
         <OpenRouterBudgetPieCard
