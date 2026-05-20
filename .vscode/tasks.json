@@ -4,7 +4,8 @@
         {
             "label": "Start Vite Dev Server",
             "type": "shell",
-            "command": "nvm use 20.19.0 && npm run dev",
+            // Use the fnm-managed LTS Node version and expose Vite on the LAN.
+            "command": "fnm use 24.15.0 && npm run dev -- --host 0.0.0.0 --port 5173",
             "icon": {
                 "id": "rocket",
                 "color": "terminal.ansiGreen"
@@ -29,7 +30,7 @@
         {
             "label": "Start Flask API with debugpy",
             "type": "shell",
-            "command": "python -m debugpy --listen 5678 run_api.py",
+            "command": ".venv/Scripts/python.exe -m debugpy --listen 5678 run_api.py",
             "options": {
                 "env": {
                     "NO_PROXY": "localhost,127.0.0.1,::1,openrouter.ai,api.github.com,github.com,.github.com",

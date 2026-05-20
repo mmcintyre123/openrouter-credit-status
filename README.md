@@ -50,9 +50,9 @@ openrouter-credit-status/
 
 ## Data Flow
 
-1. Browser loads `http://localhost:5173`.
+1. Browser loads `http://localhost:5173` or the current LAN URL on port `5173`.
 2. `UsageDashboard` triggers `useUsageDashboard`, which runs provider hooks in parallel.
-3. Frontend calls backend endpoints on `http://localhost:4000`:
+3. Frontend calls backend endpoints on the same host the browser used, on port `4000`:
    - `GET /api/openrouter/balance`
    - `GET /api/github/copilot/premium-usage`
    - `GET /api/openai/codex/limits`
@@ -69,6 +69,8 @@ openrouter-credit-status/
 - `GET http://localhost:4000/api/openrouter/balance`
 - `GET http://localhost:4000/api/github/copilot/premium-usage`
 - `GET http://localhost:4000/api/openai/codex/limits`
+
+When the dashboard is opened over the LAN, use the same paths on the printed LAN URL instead of `localhost`.
 
 ## Configuration
 
@@ -123,16 +125,22 @@ npm install
 python run_api.py
 
 # Terminal 2
-npm run dev
+npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
-Dashboard URL: `http://localhost:5173`
+`run_api.py` now binds Flask on all interfaces and prints both a local URL and the currently detected LAN URL. Vite also binds on all interfaces, so it prints both a local URL and a network URL.
+
+Dashboard URLs:
+- `http://localhost:5173` from the host machine
+- `http://<printed-lan-ip>:5173` from other devices on the same network
+
+The frontend automatically talks to the backend on the same host it was loaded from, using port `4000`. You can still override this with `VITE_API_BASE_URL` when needed.
 
 ## VS Code Auto-Start / Debug
 
 On workspace open (or `F5` to start the debugger), VS Code can auto-start:
-- Vite dev server on `5173`
-- Flask API with `debugpy` on `4000` (debug port `5678`)
+- Vite dev server on `5173` with LAN access enabled
+- Flask API with `debugpy` on `4000` (debug port `5678`) with LAN access enabled
 - Debugger attach session
 - Browser launch
 
