@@ -14,10 +14,12 @@ import {
     formatLocalDateTime,
     formatLocalDateTimeWithZone,
     formatPercent,
+    formatUSD,
 } from "../../utils/formatters.js";
 import { useRechartsTooltipDismissal } from "../../hooks/useRechartsTooltipDismissal.js";
 
 const COLORS = ["#2b6cb0", "#48bb78"];
+const CHATGPT_CREDIT_USD_RATE = 0.04;
 
 function clampPercent(value) {
     const number = Number(value ?? 0);
@@ -167,6 +169,15 @@ function WindowPie({ windowLabel, windowData }) {
 export default function CodexLimitsPieCard({ data }) {
     const primary = data?.limits?.primary ?? null;
     const secondary = data?.limits?.secondary ?? null;
+    const credits = data?.credits ?? null;
+    const rawCreditBalance = Number(credits?.balance ?? 0);
+    const balanceUsd = Number(
+        credits?.balanceUsd ??
+            Math.floor(Math.max(rawCreditBalance, 0)) *
+                CHATGPT_CREDIT_USD_RATE,
+    );
+    const hasCreditBalance =
+        credits?.hasCredits && Number.isFinite(balanceUsd);
 
     return (
         <Card.Root
@@ -176,15 +187,51 @@ export default function CodexLimitsPieCard({ data }) {
             h="100%"
         >
             <Card.Body p={{ base: 4, md: 3, xl: 4 }}>
-                <Heading size="md" mb={2}>
-                    ChatGPT Plus Codex Allowance
-                </Heading>
-                <Text fontSize="xs" color="gray.500" mb={3}>
-                    Last updated:{" "}
-                    <Code fontSize="xs">
-                        {formatLocalDateTime(data?.fetchedAt)}
-                    </Code>
-                </Text>
+                <HStack justify="space-between" align="flex-start" gap={3} mb={3}>
+                    <Box minW={0}>
+                        <Heading size="md">
+                            ChatGPT Plus Codex Allowance
+                        </Heading>
+                        <Text fontSize="xs" color="gray.500" mt={2}>
+                            Last updated:{" "}
+                            <Code fontSize="xs">
+                                {formatLocalDateTime(data?.fetchedAt)}
+                            </Code>
+                        </Text>
+                    </Box>
+                    {(hasCreditBalance || credits?.unlimited) && (
+                        <Box
+                            flexShrink={0}
+                            px={3}
+                            py={1.5}
+                            borderRadius="md"
+                            borderWidth="1px"
+                            borderColor="blue.200"
+                            bg="blue.50"
+                            textAlign="right"
+                        >
+                            <Text
+                                fontSize="2xs"
+                                color="blue.700"
+                                fontWeight="700"
+                                textTransform="uppercase"
+                                letterSpacing="wide"
+                            >
+                                Credit Balance
+                            </Text>
+                            <Text
+                                fontSize="lg"
+                                color="blue.700"
+                                fontWeight="900"
+                                lineHeight="1.15"
+                            >
+                                {credits?.unlimited
+                                    ? "Unlimited"
+                                    : formatUSD(balanceUsd)}
+                            </Text>
+                        </Box>
+                    )}
+                </HStack>
 
                 {/* Match the dashboard breakpoint so the two Codex limit cards sit side by side
                     at the same medium-narrow desktop widths. */}

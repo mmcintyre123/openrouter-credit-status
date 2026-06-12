@@ -60,7 +60,7 @@ openrouter-credit-status/
 5. Provider helpers call upstream APIs:
    - OpenRouter key usage API
    - GitHub Copilot premium usage API
-   - ChatGPT Codex WHAM usage API
+   - ChatGPT Codex WHAM usage and credit balance API
 6. Helpers normalize payloads and route handlers return stable JSON contracts.
 7. Frontend renders each card independently with its own loading/error/success state.
 
