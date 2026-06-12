@@ -1,4 +1,5 @@
 import json
+import math
 import os
 
 import requests
@@ -11,6 +12,9 @@ from backend.helpers.common import (
     to_float,
     to_int_or_none,
 )
+
+# Current USD pricing metadata used by the Codex client is $0.04 per credit.
+CHATGPT_CREDIT_USD_RATE = 0.04
 
 
 def get_chatgpt_auth_from_env():
@@ -113,12 +117,26 @@ def normalize_rate_limit_block(rate_limit):
 
 def normalize_credits(credits):
     if not isinstance(credits, dict):
-        return {"hasCredits": False, "unlimited": False, "balance": 0.0}
+        return {
+            "hasCredits": False,
+            "unlimited": False,
+            "balance": 0.0,
+            "balanceCredits": 0,
+            "balanceUsd": 0.0,
+            "currency": "USD",
+        }
+
+    raw_balance = max(to_float(credits.get("balance")), 0.0)
+    # Match the Codex client: only whole credits are priced for display.
+    balance_credits = math.floor(raw_balance)
 
     return {
         "hasCredits": bool(credits.get("has_credits")),
         "unlimited": bool(credits.get("unlimited")),
-        "balance": round(to_float(credits.get("balance")), 4),
+        "balance": round(raw_balance, 4),
+        "balanceCredits": balance_credits,
+        "balanceUsd": round(balance_credits * CHATGPT_CREDIT_USD_RATE, 2),
+        "currency": "USD",
     }
 
 
