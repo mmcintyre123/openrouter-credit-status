@@ -1,7 +1,7 @@
 # OpenRouter + Copilot + Codex Usage Dashboard
 
 A compact single-page dashboard that visualizes:
-- OpenRouter credit balance and usage
+- OpenRouter pay-as-you-go usage for the current UTC day, week, and month
 - GitHub Copilot Pro premium request usage
 - ChatGPT Codex limits
 
@@ -58,7 +58,7 @@ openrouter-credit-status/
    - `GET /api/openai/codex/limits`
 4. Flask routes in `backend/get_model_limit_balances.py` validate config/env and delegate to provider helpers.
 5. Provider helpers call upstream APIs:
-   - OpenRouter key usage API
+   - OpenRouter key usage API (`usage_daily` is the current UTC day)
    - GitHub Copilot premium usage API
    - ChatGPT Codex WHAM usage API
 6. Helpers normalize payloads and route handlers return stable JSON contracts.

@@ -22,7 +22,7 @@ export default function UsageDashboard() {
         openRouterError,
         copilotError,
         codexError,
-        openRouterPie,
+        openRouterCard,
         copilotPie,
         codexPie,
         isGlobalCompact,
@@ -36,7 +36,7 @@ export default function UsageDashboard() {
 
     const usageCards = [
         ...(cardVisibility.openrouter
-            ? [{ key: "openrouter", content: openRouterPie }]
+            ? [{ key: "openrouter", content: openRouterCard }]
             : []),
         ...(cardVisibility.copilot
             ? [{ key: "copilot", content: copilotPie }]

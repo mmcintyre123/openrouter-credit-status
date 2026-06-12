@@ -6,7 +6,7 @@ from backend.config import PROPERTIES_FILE
 from backend.helpers.codex_helper import fetch_codex_limits
 from backend.helpers.common import ServiceError, load_dashboard_properties, to_float
 from backend.helpers.copilot_helper import fetch_copilot_premium_usage
-from backend.helpers.openrouter_helper import fetch_openrouter_balance
+from backend.helpers.openrouter_helper import fetch_openrouter_usage
 
 
 def to_error_response(error):
@@ -22,7 +22,7 @@ def get_openrouter_balance_route():
         return jsonify({"error": "ANTHROPIC_AUTH_TOKEN environment variable is not set"}), 500
 
     try:
-        result = fetch_openrouter_balance(api_key)
+        result = fetch_openrouter_usage(api_key)
         return jsonify(result)
     except ServiceError as error:
         return to_error_response(error)

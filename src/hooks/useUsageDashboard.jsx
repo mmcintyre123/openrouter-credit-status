@@ -4,7 +4,7 @@ import { Card, HStack, Spinner, Text } from "@chakra-ui/react";
 import SectionAlert from "../components/SectionAlert.jsx";
 import CopilotPremiumPieCard from "../components/copilot/CopilotPremiumPieCard.jsx";
 import CodexLimitsPieCard from "../components/codex/CodexLimitsPieCard.jsx";
-import OpenRouterBudgetPieCard from "../components/openrouter/OpenRouterBudgetPieCard.jsx";
+import OpenRouterUsageCard from "../components/openrouter/OpenRouterUsageCard.jsx";
 import { API_ENDPOINTS } from "../api/endpoints.js";
 import { useApiResource } from "./useApiResource.js";
 
@@ -260,19 +260,16 @@ export function useUsageDashboard() {
     const showCodexRefreshError =
         cardVisibility.codex && codexStatus === "error" && Boolean(codexData);
 
-    const openRouterPie = openRouterData ? (
-        <OpenRouterBudgetPieCard
+    const openRouterCard = openRouterData ? (
+        <OpenRouterUsageCard
             data={openRouterData}
             isCompact={cardCompact.openrouter}
             onToggleCompact={() => toggleCardCompact("openrouter")}
         />
     ) : openRouterStatus === "error" ? (
-        <ErrorCard
-            label="OpenRouter Budget Visualization"
-            error={openRouterError}
-        />
+        <ErrorCard label="OpenRouter Usage" error={openRouterError} />
     ) : (
-        <LoadingCard label="OpenRouter chart" />
+        <LoadingCard label="OpenRouter usage" />
     );
 
     const copilotPie = copilotData ? (
@@ -316,7 +313,7 @@ export function useUsageDashboard() {
         openRouterError,
         copilotError,
         codexError,
-        openRouterPie,
+        openRouterCard,
         copilotPie,
         codexPie,
         isGlobalCompact,
