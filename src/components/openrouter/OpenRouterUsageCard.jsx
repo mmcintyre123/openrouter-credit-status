@@ -81,7 +81,7 @@ export default function OpenRouterUsageCard({
                         </Heading>
                         <Text fontSize="xs" color="gray.500" mt={1}>
                             Pay-as-you-go spend
-                            {keyLabel ? ` for ${keyLabel}` : ""}
+                            {/* {keyLabel ? ` for ${keyLabel}` : ""} */}
                         </Text>
                     </Box>
                     <CompactCardToggle
