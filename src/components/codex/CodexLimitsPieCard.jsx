@@ -21,6 +21,15 @@ import { useRechartsTooltipDismissal } from "../../hooks/useRechartsTooltipDismi
 const COLORS = ["#2b6cb0", "#48bb78"];
 const CHATGPT_CREDIT_USD_RATE = 0.04;
 
+function formatWindowLabel(windowData) {
+    const windowSeconds = Number(windowData?.windowSeconds);
+
+    if (windowSeconds === 7 * 24 * 60 * 60) return "7-Day Limit";
+    if (windowSeconds === 5 * 60 * 60) return "5-Hour Limit";
+
+    return "Usage Limit";
+}
+
 function clampPercent(value) {
     const number = Number(value ?? 0);
     return Math.min(Math.max(number, 0), 100);
@@ -169,6 +178,7 @@ function WindowPie({ windowLabel, windowData }) {
 export default function CodexLimitsPieCard({ data }) {
     const primary = data?.limits?.primary ?? null;
     const secondary = data?.limits?.secondary ?? null;
+    const limitWindows = [primary, secondary].filter(Boolean);
     const credits = data?.credits ?? null;
     const rawCreditBalance = Number(credits?.balance ?? 0);
     const balanceUsd = Number(
@@ -233,20 +243,17 @@ export default function CodexLimitsPieCard({ data }) {
                     )}
                 </HStack>
 
-                {/* Match the dashboard breakpoint so the two Codex limit cards sit side by side
-                    at the same medium-narrow desktop widths. */}
                 <SimpleGrid
-                    columns={{ base: 1, sm: 2 }}
+                    columns={{ base: 1, sm: limitWindows.length > 1 ? 2 : 1 }}
                     gap={{ base: 3, sm: 2, xl: 3 }}
                 >
-                    <WindowPie
-                        windowLabel="5-Hour Limit"
-                        windowData={primary}
-                    />
-                    <WindowPie
-                        windowLabel="7-Day Limit"
-                        windowData={secondary}
-                    />
+                    {limitWindows.map((windowData, index) => (
+                        <WindowPie
+                            key={`${windowData.windowSeconds ?? "unknown"}-${index}`}
+                            windowLabel={formatWindowLabel(windowData)}
+                            windowData={windowData}
+                        />
+                    ))}
                 </SimpleGrid>
             </Card.Body>
         </Card.Root>

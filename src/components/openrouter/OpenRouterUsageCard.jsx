@@ -63,6 +63,7 @@ export default function OpenRouterUsageCard({
         data?.usageThisMonth ?? data?.usageMonthly ?? 0,
     );
     const usageAllTime = Number(data?.usageAllTime ?? data?.usage ?? 0);
+    const creditBalance = Number(data?.creditBalance ?? 0);
     const usageTimezone = data?.usageTimezone || "UTC";
     const keyLabel = data?.keyLabel;
 
@@ -92,38 +93,75 @@ export default function OpenRouterUsageCard({
                     />
                 </HStack>
 
-                <Box
+                <SimpleGrid
+                    columns={{ base: 1, sm: 2 }}
+                    gap={2}
                     mt={3}
-                    py={5}
-                    px={4}
-                    textAlign="center"
-                    borderRadius="xl"
-                    borderWidth="1px"
-                    borderColor="blue.200"
-                    bg="blue.50"
                 >
-                    <Text
-                        fontSize="xs"
-                        color="blue.700"
-                        fontWeight="700"
-                        textTransform="uppercase"
-                        letterSpacing="wide"
+                    <Box
+                        py={5}
+                        px={4}
+                        textAlign="center"
+                        borderRadius="xl"
+                        borderWidth="1px"
+                        borderColor="blue.200"
+                        bg="blue.50"
                     >
-                        Today ({usageTimezone})
-                    </Text>
-                    <Text
-                        mt={1}
-                        fontSize={{ base: "4xl", xl: "5xl" }}
-                        fontWeight="900"
-                        color="blue.700"
-                        lineHeight="1"
+                        <Text
+                            fontSize="xs"
+                            color="blue.700"
+                            fontWeight="700"
+                            textTransform="uppercase"
+                            letterSpacing="wide"
+                        >
+                            Today ({usageTimezone})
+                        </Text>
+                        <Text
+                            mt={1}
+                            fontSize={{ base: "4xl", xl: "5xl" }}
+                            fontWeight="900"
+                            color="blue.700"
+                            lineHeight="1"
+                        >
+                            {formatUSD(usageToday)}
+                        </Text>
+                        <Text fontSize="xs" color="blue.600" mt={2}>
+                            Total usage in the current UTC day
+                        </Text>
+                    </Box>
+
+                    <Box
+                        py={5}
+                        px={4}
+                        textAlign="center"
+                        borderRadius="xl"
+                        borderWidth="1px"
+                        borderColor="green.200"
+                        bg="green.50"
                     >
-                        {formatUSD(usageToday)}
-                    </Text>
-                    <Text fontSize="xs" color="blue.600" mt={2}>
-                        Total usage in the current UTC day
-                    </Text>
-                </Box>
+                        <Text
+                            fontSize="xs"
+                            color="green.700"
+                            fontWeight="700"
+                            textTransform="uppercase"
+                            letterSpacing="wide"
+                        >
+                            Credit Balance
+                        </Text>
+                        <Text
+                            mt={1}
+                            fontSize={{ base: "4xl", xl: "5xl" }}
+                            fontWeight="900"
+                            color="green.700"
+                            lineHeight="1"
+                        >
+                            {formatUSD(creditBalance)}
+                        </Text>
+                        <Text fontSize="xs" color="green.600" mt={2}>
+                            Credits currently available
+                        </Text>
+                    </Box>
+                </SimpleGrid>
 
                 <Text fontSize="xs" color="gray.500" mt={2} textAlign="center">
                     Last updated:{" "}

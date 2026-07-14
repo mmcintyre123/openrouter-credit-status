@@ -1,6 +1,6 @@
 import requests
 
-from backend.config import OPENROUTER_KEY_URL
+from backend.config import OPENROUTER_CREDITS_URL, OPENROUTER_KEY_URL
 from backend.helpers.common import ServiceError, now_iso
 
 def fetch_openrouter_usage(api_key):
@@ -25,6 +25,15 @@ def fetch_openrouter_usage(api_key):
             )
             response.raise_for_status()
             data = response.json().get("data", {})
+
+            credits_response = session.get(
+                OPENROUTER_CREDITS_URL,
+                headers=headers,
+                timeout=20,
+                proxies={"http": None, "https": None},
+            )
+            credits_response.raise_for_status()
+            credits_data = credits_response.json().get("data", {})
     except requests.exceptions.RequestException as exc:
         raise ServiceError(f"Request failed: {exc}", status_code=500) from exc
     except ValueError as exc:
@@ -33,8 +42,12 @@ def fetch_openrouter_usage(api_key):
             status_code=500,
         ) from exc
 
+    total_credits = float(credits_data.get("total_credits", 0) or 0)
+    total_usage = float(credits_data.get("total_usage", 0) or 0)
+
     return {
         "keyLabel": data.get("label"),
+        "creditBalance": max(total_credits - total_usage, 0),
         "usageToday": float(data.get("usage_daily", 0) or 0),
         "usageThisWeek": float(data.get("usage_weekly", 0) or 0),
         "usageThisMonth": float(data.get("usage_monthly", 0) or 0),
